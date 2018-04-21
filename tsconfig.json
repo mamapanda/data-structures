@@ -8,6 +8,7 @@
     },
 
     "files": [
-        "ts/collection.ts"
+        "ts/collection.ts",
+        "ts/binary-search-tree.ts"
     ]
 }
