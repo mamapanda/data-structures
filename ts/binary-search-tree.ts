@@ -74,7 +74,8 @@ export class BinarySearchTree<T> extends Collection<T> {
                 let replacement: BSTNode<T> = node.right.leftmost();
 
                 node.value = replacement.value;
-                replacement.parent.replaceDirectChild(replacement, null);
+                // replacement is leftmost, but may still have right children
+                replacement.parent.replaceDirectChild(replacement, replacement.right);
             }
         }
     }
@@ -98,7 +99,8 @@ export class BinarySearchTree<T> extends Collection<T> {
     }
 
     iterator(): BiIterator<T> {
-        return new BSTIterator<T>(this.root, this);
+        let node: BSTNode<T> = this.root == null ? null : this.root.leftmost();
+        return new BSTIterator<T>(node, this);
     }
 
     size(): number {
@@ -177,11 +179,51 @@ class BSTIterator<T> implements BiIterator<T> {
     }
 
     hasNext(): boolean {
-        return this.valid() && this.currentNode.right != null;
+        if (!this.valid()) {
+            return false;
+        }
+
+        if (this.currentNode.right != null) {
+            return true;
+        }
+
+        let temp: BSTNode<T> = this.currentNode;
+        let previous: BSTNode<T>;
+
+        while (true) {
+            previous = temp;
+            temp = temp.parent;
+
+            if (temp == null) {
+                return false;
+            } else if (previous == temp.left) {
+                return true;
+            }
+        }
     }
 
     hasPrevious(): boolean {
-        return this.valid() && this.currentNode.left != null;
+        if (!this.valid()) {
+            return false;
+        }
+
+        if (this.currentNode.left != null) {
+            return true;
+        }
+
+        let temp: BSTNode<T> = this.currentNode;
+        let previous: BSTNode<T>;
+
+        while (true) {
+            previous = temp;
+            temp = temp.parent;
+
+            if (temp == null) {
+                return false;
+            } else if (previous == temp.right) {
+                return true;
+            }
+        }
     }
 
     source(): BinarySearchTree<T> {
