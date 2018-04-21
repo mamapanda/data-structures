@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { Iterator, Comparator, defaultCompare } from './collection'
+import { BiIterator, Comparator, defaultCompare } from './collection'
 import { BinarySearchTree } from './binary-search-tree'
 
 describe('Binary Search Tree Test', () => {

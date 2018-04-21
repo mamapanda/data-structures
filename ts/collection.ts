@@ -1,14 +1,41 @@
-export interface Collection<T> {
-    add(value: T): void;
-    clear(): void;
-    empty(): boolean;
-    eraseAt(position: Iterator<T>): void;
-    find(value: T): Iterator<T>;
-    iterator(): Iterator<T>;
-    size(): number;
+export abstract class Collection<T> {
+    abstract add(value: T): void;
+    abstract clear(): void;
+    abstract eraseAt(position: BiIterator<T>): void;
+    abstract find(value: T): BiIterator<T>;
+    abstract iterator(): BiIterator<T>;
+    abstract size(): number;
+
+    empty(): boolean {
+        return this.size() == 0;
+    }
+
+    [Symbol.iterator](): Iterator<T> {
+        let it: BiIterator<T> = this.iterator();
+
+        return {
+            next(): IteratorResult<T> {
+                if (it.valid()) {
+                    let value: T = it.value();
+
+                    it.forward();
+
+                    return {
+                        value: value,
+                        done: false
+                    };
+                } else {
+                    return {
+                        value: null,
+                        done: true
+                    };
+                }
+            }
+        }
+    }
 }
 
-export interface Iterator<T> {
+export interface BiIterator<T> {
     back(): void;
     forward(): void;
     hasNext(): boolean;
@@ -22,11 +49,11 @@ export interface List<T> extends Collection<T> {
     addAt(index: number, value: T): boolean;
     addAt(position: ListIterator<T>, value: T): boolean;
     at(index: number): T;
-    eraseAt(position: Iterator<T> | number): boolean;
+    eraseAt(position: BiIterator<T> | number): boolean;
     iterator(): ListIterator<T>;
 }
 
-export interface ListIterator<T> extends Iterator<T> {
+export interface ListIterator<T> extends BiIterator<T> {
     setValue(): T;
 }
 
@@ -45,8 +72,8 @@ export function defaultCompare<T>(lhs: T, rhs: T): number {
 export function toArray<T>(collection: Collection<T>): T[] {
     let xs: T[] = [];
 
-    for (let it: Iterator<T> = collection.iterator(); it.valid(); it.forward()) {
-        xs.push(it.value());
+    for (let x of collection) {
+        xs.push(x);
     }
 
     return xs;

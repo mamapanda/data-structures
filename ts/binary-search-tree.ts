@@ -1,7 +1,9 @@
-import { Collection, Iterator, Comparator, defaultCompare } from './collection'
+import { Collection, BiIterator, Comparator, defaultCompare } from './collection'
 
-export class BinarySearchTree<T> implements Collection<T> {
+export class BinarySearchTree<T> extends Collection<T> {
     constructor(compare: Comparator<T> = defaultCompare) {
+        super();
+
         this.compare = compare;
         this.root = null;
     }
@@ -54,11 +56,7 @@ export class BinarySearchTree<T> implements Collection<T> {
         this.root = null;
     }
 
-    empty(): boolean {
-        return this.root == null;
-    }
-
-    eraseAt(position: Iterator<T>): void {
+    eraseAt(position: BiIterator<T>): void {
         if (!this.validate(position)) {
             throw Error();
         }
@@ -81,7 +79,7 @@ export class BinarySearchTree<T> implements Collection<T> {
         }
     }
 
-    find(value: T): Iterator<T> {
+    find(value: T): BiIterator<T> {
         let node: BSTNode<T> = this.root;
 
         while (node != null) {
@@ -99,7 +97,7 @@ export class BinarySearchTree<T> implements Collection<T> {
         return null;
     }
 
-    iterator(): Iterator<T> {
+    iterator(): BiIterator<T> {
         return new BSTIterator<T>(this.root, this);
     }
 
@@ -127,12 +125,12 @@ export class BinarySearchTree<T> implements Collection<T> {
         }
     }
 
-    private validate(it: Iterator<T>): boolean {
+    private validate(it: BiIterator<T>): boolean {
         return it instanceof BSTIterator && it.source() == this && it.valid();
     }
 }
 
-class BSTIterator<T> implements Iterator<T> {
+class BSTIterator<T> implements BiIterator<T> {
     constructor(node: BSTNode<T>, tree: BinarySearchTree<T>) {
         this.currentNode = node;
         this.tree = tree;
