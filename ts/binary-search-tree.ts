@@ -126,10 +126,6 @@ export class BinarySearchTree<T> extends Collection<T> {
             newRoot.parent.replaceDirectChild(newRoot, null);
         }
     }
-
-    private validate(it: BiIterator<T>): boolean {
-        return it instanceof BSTIterator && it.source() == this && it.valid();
-    }
 }
 
 class BSTIterator<T> implements BiIterator<T> {
@@ -226,7 +222,7 @@ class BSTIterator<T> implements BiIterator<T> {
         }
     }
 
-    source(): BinarySearchTree<T> {
+    source(): Collection<T> {
         return this.tree;
     }
 

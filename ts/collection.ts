@@ -10,6 +10,26 @@ export abstract class Collection<T> {
         return this.size() == 0;
     }
 
+    findIf(p: (value: T) => boolean): BiIterator<T> {
+        for (let it: BiIterator<T> = this.iterator(); it.valid(); it.forward()) {
+            if (p(it.value())) {
+                return it;
+            }
+        }
+
+        return null;
+    }
+
+    toArray(): T[] {
+        let xs: T[] = [];
+
+        for (let x of this) {
+            xs.push(x);
+        }
+
+        return xs;
+    }
+
     [Symbol.iterator](): Iterator<T> {
         let it: BiIterator<T> = this.iterator();
 
@@ -33,6 +53,10 @@ export abstract class Collection<T> {
             }
         }
     }
+
+    protected validate(it: BiIterator<T>) {
+        return it.source() == this && it.valid();
+    }
 }
 
 export interface BiIterator<T> {
@@ -45,16 +69,17 @@ export interface BiIterator<T> {
     value(): T;
 }
 
-export interface List<T> extends Collection<T> {
-    addAt(index: number, value: T): boolean;
-    addAt(position: ListIterator<T>, value: T): boolean;
-    at(index: number): T;
-    eraseAt(position: BiIterator<T> | number): boolean;
-    iterator(): ListIterator<T>;
+export abstract class List<T> extends Collection<T> {
+    abstract addAt(index: number, value: T): void;
+    abstract addAt(position: ListIterator<T>, value: T): void;
+    abstract at(index: number): T;
+    abstract eraseAt(position: BiIterator<T> | number): void;
+    abstract iterator(): ListIterator<T>;
 }
 
 export interface ListIterator<T> extends BiIterator<T> {
-    setValue(): T;
+    setValue(value: T): void;
+    source(): List<T>;
 }
 
 export type Comparator<T> = (lhs: T, rhs: T) => number;
@@ -67,14 +92,4 @@ export function defaultCompare<T>(lhs: T, rhs: T): number {
     } else {
         return 0;
     }
-}
-
-export function toArray<T>(collection: Collection<T>): T[] {
-    let xs: T[] = [];
-
-    for (let x of collection) {
-        xs.push(x);
-    }
-
-    return xs;
 }
