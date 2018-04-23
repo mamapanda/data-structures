@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import { BiIterator, Comparator, defaultCompare } from './collection'
-import { BinarySearchTree } from './binary-search-tree'
+import { BiIterator, Comparator, defaultCompare } from './collection';
+import { BinarySearchTree } from './binary-search-tree';
 
 describe('Binary Search Tree Test', () => {
     describe('default constructor', () => {

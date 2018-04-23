@@ -1,36 +1,10 @@
-import { BiIterator, List, ListIterator } from './collection'
+import { BiIterator, List, ListIterator } from './collection';
 
 export class LinkedList<T> extends List<T> {
     constructor() {
         super();
         this.head = null;
         this.last = null;
-    }
-
-    popBack(): T {
-        if (this.empty()) {
-            throw Error();
-        }
-
-        let last: LLNode<T> = this.last;
-
-        this.last = this.last.previous;
-        unlink(this.last, last);
-
-        return last.value;
-    }
-
-    popFront(): T {
-        if (this.empty()) {
-            throw Error();
-        }
-
-        let head: LLNode<T> = this.head;
-
-        this.head = this.head.next;
-        unlink(head, this.head);
-
-        return head.value;
     }
 
     peekBack(): T {
@@ -47,6 +21,42 @@ export class LinkedList<T> extends List<T> {
         }
 
         return this.head.value;
+    }
+
+    popBack(): T {
+        if (this.empty()) {
+            throw Error();
+        }
+
+        let oldLast: LLNode<T> = this.last;
+
+        this.last = this.last.previous;
+
+        if (this.last != null) {
+            unlink(this.last, oldLast);
+        } else {
+            this.head = null;
+        }
+
+        return oldLast.value;
+    }
+
+    popFront(): T {
+        if (this.empty()) {
+            throw Error();
+        }
+
+        let oldHead: LLNode<T> = this.head;
+
+        this.head = this.head.next;
+
+        if (this.head != null) {
+            unlink(oldHead, this.head);
+        } else {
+            this.last = null;
+        }
+
+        return oldHead.value;
     }
 
     pushBack(value: T): void {
@@ -161,7 +171,11 @@ export class LinkedList<T> extends List<T> {
     }
 
     toString(): string {
-        let str: string = `[${this.head == null ? "" : this.head.value.toString()}`;
+        if (this.head == null) {
+            return '[]';
+        }
+
+        let str: string = `[${this.head.value.toString()}`;
 
         for (let node: LLNode<T> = this.head.next; node != null; node = node.next) {
             str += `,${node.value.toString()}`;
