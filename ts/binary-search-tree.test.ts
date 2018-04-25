@@ -320,6 +320,13 @@ describe('Binary Search Tree Test', () => {
         })
     })
     describe('BinarySearchTree::iterator', () => {
+        it('Access Invalid Iterator', () => {
+            let tree: BinarySearchTree<number> = new BinarySearchTree<number>();
+            let it: BiIterator<number> = tree.iterator();
+
+            expect(it.valid()).to.be.eq(false);
+            expect(it.value.bind(it)).to.throw();
+        })
         it('Empty Tree', () => {
             let tree: BinarySearchTree<number> = new BinarySearchTree<number>();
             let it: BiIterator<number> = tree.iterator();

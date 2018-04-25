@@ -74,6 +74,7 @@ export abstract class List<T> extends Collection<T> {
     abstract addAt(position: ListIterator<T>, value: T): void;
     abstract at(index: number): T;
     abstract eraseAt(position: BiIterator<T> | number): void;
+    abstract find(value: T): ListIterator<T>;
     abstract iterator(): ListIterator<T>;
 }
 

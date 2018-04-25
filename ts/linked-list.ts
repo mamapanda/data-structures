@@ -146,7 +146,7 @@ export class LinkedList<T> extends List<T> {
         }
     }
 
-    find(value: T): BiIterator<T> {
+    find(value: T): ListIterator<T> {
         for (let node: LLNode<T> = this.head; node != null; node = node.next) {
             if (node.value == value) {
                 return new LLIterator<T>(node, this);
