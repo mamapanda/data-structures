@@ -1,14 +1,16 @@
 {
     "compilerOptions": {
-        "module": "none",
+        "module": "es6",
         "target": "es6",
         "noImplicitAny": false,
         "sourceMap": false,
-        "outFile": "build/collections.js"
+        "outDir": "build"
     },
 
     "files": [
         "ts/collection.ts",
-        "ts/binary-search-tree.ts"
+        "ts/binary-search-tree.ts",
+        "ts/linked-list.ts",
+        "ts/binary-heap.ts"
     ]
 }
