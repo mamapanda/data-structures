@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "module": "es6",
+        "module": "None", // es6 fails with npm run test (TODO: fix?)
         "target": "es6",
         "noImplicitAny": false,
         "sourceMap": false,

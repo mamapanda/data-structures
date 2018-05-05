@@ -43,9 +43,13 @@ export class BinaryHeap<T> extends Collection<T> {
 
         let it: BHeapIterator<T> = position as BHeapIterator<T>;
 
-        this.data[it.index()] = this.data.pop();
+        if (it.index() == this.data.length - 1) { // last element
+            this.data.pop();
+        } else {
+            this.data[it.index()] = this.data.pop();
 
-        this.heapifyDown(it.index());
+            this.heapifyDown(it.index());
+        }
     }
 
     find(value: T): BiIterator<T> {
@@ -67,7 +71,7 @@ export class BinaryHeap<T> extends Collection<T> {
     }
 
     toString(): string {
-        return this.data.toString();
+        return `[${this.data.toString()}]`;
     }
 
     private heapifyDown(i: number): void {
@@ -89,6 +93,8 @@ export class BinaryHeap<T> extends Collection<T> {
                        && this.compare(this.data[iRight], this.data[i]) < 0) {
                 [this.data[i], this.data[iRight]] = [this.data[iRight], this.data[i]];
                 i = iRight;
+            } else {
+                break;
             }
         }
     }
@@ -128,7 +134,7 @@ class BHeapIterator<T> implements BiIterator<T> {
     }
 
     hasNext(): boolean {
-        return this.valid() && this.currentIndex + 1 <= this.data.length;
+        return this.valid() && this.currentIndex + 1 < this.data.length;
     }
 
     hasPrevious(): boolean {
