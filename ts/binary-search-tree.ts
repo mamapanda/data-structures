@@ -25,31 +25,7 @@ export class BinarySearchTree<T> extends Collection<T> {
     }
 
     add(value: T): void {
-        if (this.empty()) {
-            this.root = new BSTNode<T>(value, null);
-        } else {
-            let node: BSTNode<T> = this.root;
-
-            while (true) {
-                let comparison: number = this.compare(value, node.value);
-
-                if (comparison > 0) {
-                    if (node.right != null) {
-                        node = node.right;
-                    } else {
-                        node.right = new BSTNode<T>(value, node);
-                    }
-                } else if (comparison < 0) {
-                    if (node.left != null) {
-                        node = node.left
-                    } else {
-                        node.left = new BSTNode<T>(value, node);
-                    }
-                } else {
-                    break;
-                }
-            }
-        }
+        this.insert(value, (v, p) => new BSTNode<T>(v, p));
     }
 
     clear(): void {
@@ -63,21 +39,7 @@ export class BinarySearchTree<T> extends Collection<T> {
 
         let node: BSTNode<T> = (position as BSTIterator<T>).node();
 
-        if (node == this.root) { // node.parent == null
-            this.eraseRoot();
-        } else { // node.parent != null
-            if (node.right == null) {
-                node.parent.replaceDirectChild(node, node.left);
-            } else if (node.left == null) {
-                node.parent.replaceDirectChild(node, node.right);
-            } else {
-                let replacement: BSTNode<T> = node.right.leftmost();
-
-                node.value = replacement.value;
-                // replacement is leftmost, but may still have right children
-                replacement.parent.replaceDirectChild(replacement, replacement.right);
-            }
-        }
+        this.remove(node);
     }
 
     find(value: T): BiIterator<T> {
@@ -111,24 +73,84 @@ export class BinarySearchTree<T> extends Collection<T> {
         return `<${this.root == null ? "" : this.root.toString()}>`
     }
 
+    protected insert(value: T,
+                     makeNode: (value: T, parent: BSTNode<T>) => BSTNode<T>
+                    ): boolean {
+        if (this.empty()) {
+            this.root = makeNode(value, null);
+            return true;
+        } else {
+            let node: BSTNode<T> = this.root;
+
+            while (true) {
+                let comparison: number = this.compare(value, node.value);
+
+                if (comparison > 0) {
+                    if (node.right != null) {
+                        node = node.right;
+                    } else {
+                        node.right = makeNode(value, node);
+                        return true;
+                    }
+                } else if (comparison < 0) {
+                    if (node.left != null) {
+                        node = node.left
+                    } else {
+                        node.left = makeNode(value, node);
+                        return true;
+                    }
+                } else { // equivalent node already exists
+                    return false;
+                }
+            }
+        }
+    }
+
+    // Returns the parent of the physically removed node.
+    protected remove(node: BSTNode<T>): BSTNode<T> {
+        if (node == this.root) { // node.parent == null
+            return this.eraseRoot();
+        } else { // node.parent != null
+            if (node.right == null) {
+                node.parent.replaceDirectChild(node, node.left);
+                return node.parent;
+            } else if (node.left == null) {
+                node.parent.replaceDirectChild(node, node.right);
+                return node.parent;
+            } else {
+                let replacement: BSTNode<T> = node.right.leftmost();
+
+                node.value = replacement.value;
+                // replacement is leftmost, but may still have right children
+                replacement.parent.replaceDirectChild(replacement, replacement.right);
+
+                return replacement.parent;
+            }
+        }
+    }
+
     private compare: Comparator<T>;
     private root: BSTNode<T>;
 
-    private eraseRoot(): void {
+    private eraseRoot(): BSTNode<T> {
         if (this.root.right == null) {
             this.root = this.root.left;
+            return null;
         } else if (this.root.left == null) {
             this.root = this.root.right;
+            return null;
         } else {
             let newRoot: BSTNode<T> = this.root.right.leftmost();
 
             this.root.value = newRoot.value;
             newRoot.parent.replaceDirectChild(newRoot, null);
+
+            return newRoot.parent;
         }
     }
 }
 
-class BSTIterator<T> implements BiIterator<T> {
+export class BSTIterator<T> implements BiIterator<T> {
     constructor(node: BSTNode<T>, tree: BinarySearchTree<T>) {
         this.currentNode = node;
         this.tree = tree;
@@ -242,7 +264,7 @@ class BSTIterator<T> implements BiIterator<T> {
     private tree: BinarySearchTree<T>;
 }
 
-class BSTNode<T> {
+export class BSTNode<T> {
     left: BSTNode<T>;
     parent: BSTNode<T>;p
     right: BSTNode<T>;
