@@ -9,12 +9,14 @@ export class SplayTree<T> extends BinarySearchTree<T> {
     add(value: T): void {
         let node: BSTNode<T>;
 
-        super.insert(value, (v, p) => {
+        let inserted: boolean = super.insert(value, (v, p) => {
             node = new BSTNode<T>(v, p);
             return node;
         });
 
-        this.splay(node);
+        if (inserted) {
+            this.splay(node);
+        }
     }
 
     eraseAt(position: BiIterator<T>): void {
@@ -25,7 +27,9 @@ export class SplayTree<T> extends BinarySearchTree<T> {
         let parent: BSTNode<T> = (position as BSTIterator<T>).node().parent;
 
         super.eraseAt(position);
-        this.splay(parent);
+        if (parent != null) {
+            this.splay(parent);
+        }
     }
 
     find(value: T): BiIterator<T> {
