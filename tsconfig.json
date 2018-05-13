@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "module": "None", // es6 fails with npm run test (TODO: fix?)
+        "module": "None", // es6 fails with npm run test
         "target": "es6",
         "noImplicitAny": false,
         "sourceMap": false,
@@ -11,6 +11,8 @@
         "ts/collection.ts",
         "ts/binary-search-tree.ts",
         "ts/linked-list.ts",
-        "ts/binary-heap.ts"
+        "ts/binary-heap.ts",
+        "ts/avl-tree.ts",
+        "ts/splay-tree.ts"
     ]
 }

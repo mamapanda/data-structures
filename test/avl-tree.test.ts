@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import { BiIterator, Comparator, defaultCompare } from './collection';
-import { AVLTree } from './avl-tree';
+import { BiIterator, Comparator, defaultCompare } from '../ts/collection';
+import { AVLTree } from '../ts/avl-tree';
 
 describe('AVL Tree Test', () => {
     describe('default constructor', () => {

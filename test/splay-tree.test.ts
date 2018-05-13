@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import { BiIterator, Comparator, defaultCompare } from './collection';
-import { SplayTree } from './splay-tree';
+import { BiIterator, Comparator, defaultCompare } from '../ts/collection';
+import { SplayTree } from '../ts/splay-tree';
 
 describe('Splay Tree Test', () => {
     describe('default constructor', () => {

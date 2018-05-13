@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import { ListIterator } from './collection';
-import { LinkedList } from './linked-list';
+import { ListIterator } from '../ts/collection';
+import { LinkedList } from '../ts/linked-list';
 
 describe('Linked List Test', () => {
     describe('default constructor', () => {
