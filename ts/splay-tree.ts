@@ -24,11 +24,24 @@ export class SplayTree<T> extends BinarySearchTree<T> {
             throw Error();
         }
 
-        let parent: BSTNode<T> = (position as BSTIterator<T>).node().parent;
+        let node: BSTNode<T> = (position as BSTIterator<T>).node();
 
-        super.eraseAt(position);
-        if (parent != null) {
-            this.splay(parent);
+        this.splay(node); // node becomes this.root
+
+        if (this.root.left == null) {
+            this.root = node.right;
+        } else {
+            this.root = node.left;
+            this.root.parent = null;
+
+            this.splay(this.root.rightmost());
+
+            if (node.right == null) {
+                this.root.right = null;
+            } else {
+                this.root.right = node.right;
+                this.root.right.parent = this.root;
+            }
         }
     }
 
@@ -40,6 +53,22 @@ export class SplayTree<T> extends BinarySearchTree<T> {
         }
 
         return it;
+    }
+
+    max(): T {
+        let max: T = super.max();
+
+        this.splay(this.root.rightmost());
+
+        return max;
+    }
+
+    min(): T {
+        let min: T = super.min();
+
+        this.splay(this.root.leftmost());
+
+        return min;
     }
 
     private splay(node: BSTNode<T>): void {

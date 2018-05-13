@@ -312,7 +312,7 @@ export class BSTIterator<T> implements BiIterator<T> {
 
 export class BSTNode<T> {
     left: BSTNode<T>;
-    parent: BSTNode<T>;p
+    parent: BSTNode<T>;
     right: BSTNode<T>;
     value: T;
 

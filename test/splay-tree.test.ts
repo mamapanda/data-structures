@@ -1,3 +1,4 @@
+// TODO: eraseAt, max, min
 import { expect } from 'chai';
 import { BiIterator, Comparator, defaultCompare } from '../ts/collection';
 import { SplayTree } from '../ts/splay-tree';
@@ -60,7 +61,7 @@ describe('Splay Tree Test', () => {
         })
         it('Erase Root', () => {
             let tree: SplayTree<number> = new SplayTree<number>();
-            let expectedStr: string = "<8[6[4[3[0[][1[][]]][]][]][]][9[][]]>";
+            let expectedStr: string = "<6[4[3[0[][1[][]]][]][]][9[8[][]][]]>";
 
             [6,1,0,3,4,8,9,7].forEach(x => tree.add(x))
 
@@ -70,7 +71,7 @@ describe('Splay Tree Test', () => {
         })
         it('Erase Internal Node', () => {
             let tree: SplayTree<number> = new SplayTree<number>();
-            let expectedStr: string = "<4[0[][1[][]]][6[][7[][9[8[][]][]]]]>";
+            let expectedStr: string = "<1[0[][]][7[4[][6[][]]][9[8[][]][]]]>";
 
             [6,1,0,3,4,8,9,7].forEach(x => tree.add(x))
 
@@ -88,7 +89,7 @@ describe('Splay Tree Test', () => {
         it('Erase Leaf (Reversed Comparator)', () => {
             let cmp: Comparator<number> = (lhs, rhs) => defaultCompare(rhs, lhs);
             let tree: SplayTree<number> = new SplayTree<number>(cmp);
-            let expectedStr: string = "<0[6[7[9[][8[][]]][]][3[4[][]][]]][]>";
+            let expectedStr: string = "<3[4[7[9[][8[][]]][6[][]]][]][0[][]]>";
 
             [6,1,0,3,4,8,9,7].forEach(x => tree.add(x))
 
@@ -197,6 +198,54 @@ describe('Splay Tree Test', () => {
             let it: BiIterator<number> = tree.find(-1);
 
             expect(it).to.be.eq(null);
+            expect(tree.toString()).to.be.eq(expectedStr);
+        })
+    })
+    describe('SplayTree::max', () => {
+        it('Empty Tree', () => {
+            let tree: SplayTree<number> = new SplayTree<number>();
+
+            expect(tree.max.bind(tree)).to.throw();
+        })
+        it('Single Input', () => {
+            let tree: SplayTree<number> = new SplayTree<number>();
+
+            tree.add(3);
+
+            expect(tree.max()).to.be.eq(3);
+            expect(tree.toString()).to.be.eq('<3[][]>');
+        })
+        it('Multiple Inputs', () => {
+            let tree: SplayTree<number> = new SplayTree<number>();
+            let expectedStr: string = '<9[7[6[4[3[0[][1[][]]][]][]][]][8[][]]][]>';
+
+            [6,1,0,3,4,8,9,7].forEach(x => tree.add(x))
+
+            expect(tree.max()).to.be.eq(9);
+            expect(tree.toString()).to.be.eq(expectedStr);
+        })
+    })
+    describe('SplayTree::min', () => {
+        it('Empty Tree', () => {
+            let tree: SplayTree<number> = new SplayTree<number>();
+
+            expect(tree.min.bind(tree)).to.throw();
+        })
+        it('Single Input', () => {
+            let tree: SplayTree<number> = new SplayTree<number>();
+
+            tree.add(3);
+
+            expect(tree.min()).to.be.eq(3);
+            expect(tree.toString()).to.be.eq('<3[][]>');
+        })
+        it('Multiple Inputs', () => {
+            let tree: SplayTree<number> = new SplayTree<number>();
+            let expectedStr: string = '<0[][6[3[1[][]][4[][]]][7[][9[8[][]][]]]]>';
+
+            [6,1,0,3,4,8,9,7].forEach(x => tree.add(x))
+
+            expect(tree.min()).to.be.eq(0);
             expect(tree.toString()).to.be.eq(expectedStr);
         })
     })
