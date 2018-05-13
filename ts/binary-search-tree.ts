@@ -129,6 +129,52 @@ export class BinarySearchTree<T> extends Collection<T> {
         }
     }
 
+    protected rotateLeft(node: BSTNode<T>): BSTNode<T> {
+        let parent: BSTNode<T> = node.parent;
+        let newSubroot: BSTNode<T> = node.right;
+
+        node.right = newSubroot.left;
+        if (node.right != null) {
+            node.right.parent = node;
+        }
+
+        newSubroot.left = node;
+        node.parent = newSubroot;
+
+        if (parent != null) { // node was not root
+            parent.replaceDirectChild(node, newSubroot);
+            newSubroot.parent = parent;
+        } else {
+            this.root = newSubroot;
+            newSubroot.parent = null;
+        }
+
+        return newSubroot;
+    }
+
+    protected rotateRight(node: BSTNode<T>): BSTNode<T> {
+        let parent: BSTNode<T> = node.parent;
+        let newSubroot: BSTNode<T> = node.left;
+
+        node.left = newSubroot.right;
+        if (node.left != null) {
+            node.left.parent = node;
+        }
+
+        newSubroot.right = node;
+        node.parent = newSubroot;
+
+        if (parent != null) { // node was not root
+            parent.replaceDirectChild(node, newSubroot);
+            newSubroot.parent = parent;
+        } else {
+            this.root = newSubroot;
+            newSubroot.parent = null;
+        }
+
+        return newSubroot;
+    }
+
     private compare: Comparator<T>;
     private root: BSTNode<T>;
 
@@ -143,7 +189,7 @@ export class BinarySearchTree<T> extends Collection<T> {
             let newRoot: BSTNode<T> = this.root.right.leftmost();
 
             this.root.value = newRoot.value;
-            newRoot.parent.replaceDirectChild(newRoot, null);
+            newRoot.parent.replaceDirectChild(newRoot, newRoot.right);
 
             return newRoot.parent;
         }

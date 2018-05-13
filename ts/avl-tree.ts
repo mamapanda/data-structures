@@ -15,7 +15,7 @@ export class AVLTree<T> extends BinarySearchTree<T> {
         });
 
         if (inserted) {
-            rebalance(node);
+            this.rebalance(node);
         }
     }
 
@@ -28,8 +28,63 @@ export class AVLTree<T> extends BinarySearchTree<T> {
         let rebalanceNode = super.remove(node) as AVLNode<T>;
 
         if (rebalanceNode != null) {
-            rebalance(rebalanceNode);
+            this.rebalance(rebalanceNode);
         }
+    }
+
+    protected rebalance(node: AVLNode<T>) {
+        while (node != null) {
+            let subroot: AVLNode<T> = this.rebalanceAt(node);
+
+            node.updateSubHeight();
+            subroot.updateSubHeight();
+
+            node = subroot.parentAVL();
+        }
+    }
+
+    protected rebalanceAt(node: AVLNode<T>): AVLNode<T> {
+        let balanceFactor: number = node.balanceFactor();
+
+        if (balanceFactor > 1) {
+            let rightBalance: number = node.rightAVL().balanceFactor();
+
+            if (rightBalance >= 0) {
+                return this.rotateLeft(node);
+            } else {
+                this.rotateRight(node.rightAVL());
+                return this.rotateLeft(node);
+            }
+        } else if (balanceFactor < -1) {
+            let leftBalance: number = node.leftAVL().balanceFactor();
+
+            if (leftBalance <= 0) {
+                return this.rotateRight(node);
+            } else {
+                this.rotateLeft(node.leftAVL());
+                return this.rotateRight(node);
+            }
+        } else {
+            return node;
+        }
+    }
+
+    protected rotateLeft(node: AVLNode<T>): AVLNode<T> {
+        let subroot: AVLNode<T> = super.rotateLeft(node) as AVLNode<T>;
+
+        node.updateSubHeight();
+        subroot.updateSubHeight();
+
+        return subroot;
+    }
+
+    protected rotateRight(node: AVLNode<T>): AVLNode<T> {
+        let subroot: AVLNode<T> = super.rotateRight(node) as AVLNode<T>;
+
+        node.updateSubHeight();
+        subroot.updateSubHeight();
+
+        return subroot;
     }
 }
 
@@ -78,76 +133,4 @@ class AVLNode<T> extends BSTNode<T> {
     rightAVL(): AVLNode<T> {
         return this.right as AVLNode<T>;
     }
-}
-
-function rebalance<T>(node: AVLNode<T>): void {
-    while (node != null) {
-        node = rebalanceAt(node).parentAVL();
-    }
-}
-
-function rebalanceAt<T>(node: AVLNode<T>): AVLNode<T> {
-    let balanceFactor: number = node.balanceFactor();
-
-    if (balanceFactor > 1) {
-        let rightBalance: number = node.rightAVL().balanceFactor();
-
-        if (rightBalance >= 0) {
-            return rotateLeft(node);
-        } else {
-            rotateRight(node.rightAVL());
-            return rotateLeft(node);
-        }
-    } else if (balanceFactor < -1) {
-        let leftBalance: number = node.leftAVL().balanceFactor();
-
-        if (leftBalance <= 0) {
-            return rotateRight(node);
-        } else {
-            rotateLeft(node.leftAVL());
-            return rotateRight(node);
-        }
-    } else {
-        return node;
-    }
-}
-
-// doesn't update all ancestor subheights for lower rebalance time complexity
-function rotateLeft<T>(node: AVLNode<T>): AVLNode<T> {
-    let parent: AVLNode<T> = node.parentAVL();
-    let newSubRoot: AVLNode<T> = node.rightAVL();
-
-    node.right = newSubRoot.left;
-    node.right.parent = node;
-
-    newSubRoot.left = node;
-    node.parent = newSubRoot;
-
-    parent.replaceDirectChild(node, newSubRoot);
-    newSubRoot.parent = parent;
-
-    node.updateSubHeight();
-    newSubRoot.updateSubHeight();
-
-    return newSubRoot;
-}
-
-// doesn't update all ancestor subheights for lower rebalance time complexity
-function rotateRight<T>(node: AVLNode<T>): AVLNode<T> {
-    let parent: AVLNode<T> = node.parentAVL();
-    let newSubRoot: AVLNode<T> = node.leftAVL();
-
-    node.left = newSubRoot.right;
-    node.left.parent = node;
-
-    newSubRoot.right = node;
-    node.parent = newSubRoot;
-
-    parent.replaceDirectChild(node, newSubRoot);
-    newSubRoot.parent = parent;
-
-    node.updateSubHeight();
-    newSubRoot.updateSubHeight();
-
-    return newSubRoot;
 }
