@@ -73,6 +73,9 @@ export class BinarySearchTree<T> extends Collection<T> {
         return `<${this.root == null ? "" : this.root.toString()}>`
     }
 
+    protected compare: Comparator<T>;
+    protected root: BSTNode<T>;
+
     protected insert(value: T,
                      makeNode: (value: T, parent: BSTNode<T>) => BSTNode<T>
                     ): boolean {
@@ -174,9 +177,6 @@ export class BinarySearchTree<T> extends Collection<T> {
 
         return newSubroot;
     }
-
-    private compare: Comparator<T>;
-    private root: BSTNode<T>;
 
     private eraseRoot(): BSTNode<T> {
         if (this.root.right == null) {
