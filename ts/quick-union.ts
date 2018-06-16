@@ -4,11 +4,15 @@ export class QuickUnion extends DisjointSet {
     constructor(nVertices: number) {
         super();
 
-        this.parentIDs = new Array(nVertices).map((_: number, i: number) => i);
+        this.parentIDs = new Array(nVertices);
+
+        for (let i: number = 0; i < nVertices; ++i) {
+            this.parentIDs[i] = i;
+        }
     }
 
     find(vertex: number): number {
-        if (vertex >= this.parentIDs.length) {
+        if (vertex < 0 || vertex >= this.parentIDs.length) {
             throw Error();
         } else {
             while (this.parentIDs[vertex] != vertex) {

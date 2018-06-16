@@ -7,12 +7,7 @@
         "outDir": "build"
     },
 
-    "files": [
-        "ts/collection.ts",
-        "ts/binary-search-tree.ts",
-        "ts/linked-list.ts",
-        "ts/binary-heap.ts",
-        "ts/avl-tree.ts",
-        "ts/splay-tree.ts"
+    "include": [
+        "./ts"
     ]
 }
