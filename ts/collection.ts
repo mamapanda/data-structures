@@ -43,3 +43,9 @@ export function defaultCompare<T>(lhs: T, rhs: T): number {
         return 0;
     }
 }
+
+export type Equality<T> = (lhs: T, rhs: T) => boolean;
+
+export function defaultEquality<T>(lhs: T, rhs: T): boolean {
+    return lhs == rhs;
+}

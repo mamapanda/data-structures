@@ -1,10 +1,12 @@
-import { List } from './collection';
+import { List, Equality, defaultEquality } from './collection';
 
 export class LinkedList<T> extends List<T> {
-    constructor() {
+    constructor(equal: Equality<T> = defaultEquality) {
         super();
+
         this.head = null;
         this.last = null;
+        this.equal = equal;
     }
 
     peekBack(): T {
@@ -119,7 +121,7 @@ export class LinkedList<T> extends List<T> {
         let i: number = 0;
 
         for (let node: LLNode<T> = this.head; node != null; node = node.next) {
-            if (node.value == value) {
+            if (this.equal(node.value, value)) {
                 this.eraseAt(i);
                 break;
             }
@@ -153,7 +155,7 @@ export class LinkedList<T> extends List<T> {
 
     find(value: T): boolean {
         for (let node: LLNode<T> = this.head; node != null; node = node.next) {
-            if (node.value == value) {
+            if (this.equal(node.value, value)) {
                 return true;
             }
         }
@@ -189,6 +191,7 @@ export class LinkedList<T> extends List<T> {
         return str + ']';
     }
 
+    private equal: Equality<T>;
     private head: LLNode<T>;
     private last: LLNode<T>;
 
