@@ -1,4 +1,4 @@
-import { BiIterator, List, ListIterator } from './collection';
+import { List } from './collection';
 
 export class LinkedList<T> extends List<T> {
     constructor() {
@@ -87,30 +87,22 @@ export class LinkedList<T> extends List<T> {
         this.pushBack(value);
     }
 
-    addAt(position: ListIterator<T> | number, value: T): void {
+    addAt(index: number, value: T): void {
         let node: LLNode<T>;
+        let currentSize: number = this.size();
 
-        try {
-            node = this.nodeAt(position);
-        } catch (e) {
-            let atEnd: boolean = (typeof position == 'object' && !position.valid())
-                || (typeof position == 'number' && position == this.size());
-
-            if (atEnd) {
-                this.pushBack(value);
-                return;
-            } else {
-                throw e;
-            }
-        }
-
-        if (node == this.head) {
+        if (index == 0) {
             this.pushFront(value);
-        } else {
+        } else if (index < currentSize) {
+            let node: LLNode<T> = this.nodeAt(index);
             let newNode: LLNode<T> = new LLNode<T>(value);
 
             link(node.previous, newNode);
             link(newNode, node);
+        } else if (index == currentSize) {
+            this.pushBack(value);
+        } else {
+            throw Error();
         }
     }
 
@@ -123,8 +115,21 @@ export class LinkedList<T> extends List<T> {
         this.last = null;
     }
 
-    eraseAt(position: BiIterator<T> | number): void {
-        let node: LLNode<T> = this.nodeAt(position);
+    erase(value: T): void {
+        let i: number = 0;
+
+        for (let node: LLNode<T> = this.head; node != null; node = node.next) {
+            if (node.value == value) {
+                this.eraseAt(i);
+                break;
+            }
+
+            ++i;
+        }
+    }
+
+    eraseAt(index: number): void {
+        let node: LLNode<T> = this.nodeAt(index);
 
         let previous: LLNode<T> = node.previous;
         let next: LLNode<T> = node.next;
@@ -146,18 +151,18 @@ export class LinkedList<T> extends List<T> {
         }
     }
 
-    find(value: T): ListIterator<T> {
+    find(value: T): boolean {
         for (let node: LLNode<T> = this.head; node != null; node = node.next) {
             if (node.value == value) {
-                return new LLIterator<T>(node, this);
+                return true;
             }
         }
 
-        return null;
+        return false;
     }
 
-    iterator(): ListIterator<T> {
-        return new LLIterator<T>(this.head, this);
+    iterator(): Iterator<T> {
+        return new LLIterator<T>(this.head);
     }
 
     size(): number {
@@ -187,19 +192,7 @@ export class LinkedList<T> extends List<T> {
     private head: LLNode<T>;
     private last: LLNode<T>;
 
-    private nodeAt(position: BiIterator<T> | number): LLNode<T> {
-        if (typeof position == 'number') {
-            return this.nodeAtIndex(position);
-        } else {
-            if (!this.validate(position)) {
-                throw Error();
-            }
-
-            return (position as LLIterator<T>).node();
-        }
-    }
-
-    private nodeAtIndex(index: number): LLNode<T> {
+    private nodeAt(index: number): LLNode<T> {
         if (index < 0) {
             throw Error();
         }
@@ -220,74 +213,27 @@ export class LinkedList<T> extends List<T> {
     }
 }
 
-class LLIterator<T> implements ListIterator<T> {
-    constructor(node: LLNode<T>, list: LinkedList<T>) {
+class LLIterator<T> implements Iterator<T> {
+    constructor(node: LLNode<T>) {
         this.currentNode = node;
-        this.list = list;
     }
 
-    node(): LLNode<T> {
-        return this.currentNode;
-    }
+    next(): IteratorResult<T> {
+        if (this.currentNode == null) {
+            return { value: null, done: true };
+        } else {
+            let result: IteratorResult<T> = {
+                value: this.currentNode.value,
+                done: false
+            };
 
-    back(): void {
-        if (!this.valid()) {
-            throw Error();
+            this.currentNode = this.currentNode.next;
+
+            return result;
         }
-
-        this.currentNode = this.currentNode.previous;
-    }
-
-    forward(): void {
-        if (!this.valid()) {
-            throw Error();
-        }
-
-        this.currentNode = this.currentNode.next;
-    }
-
-    hasNext(): boolean {
-        if (!this.valid()) {
-            return false;
-        }
-
-        return this.currentNode.next != null;
-    }
-
-    hasPrevious(): boolean {
-        if (!this.valid()) {
-            return false;
-        }
-
-        return this.currentNode.previous != null;
-    }
-
-    setValue(value: T): void {
-        if (!this.valid()) {
-            throw Error();
-        }
-
-        this.currentNode.value = value;
-    }
-
-    source(): List<T> {
-        return this.list;
-    }
-
-    valid(): boolean {
-        return this.currentNode != null;
-    }
-
-    value(): T {
-        if (!this.valid()) {
-            throw Error();
-        }
-
-        return this.currentNode.value;
     }
 
     private currentNode: LLNode<T>;
-    private list: LinkedList<T>;
 }
 
 class LLNode<T> {

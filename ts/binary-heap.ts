@@ -1,4 +1,4 @@
-import { Collection, BiIterator, Comparator, defaultCompare } from './collection'
+import { Collection, Comparator, defaultCompare } from './collection'
 
 export class BinaryHeap<T> extends Collection<T> {
     constructor(compare: Comparator<T> = defaultCompare) {
@@ -22,7 +22,7 @@ export class BinaryHeap<T> extends Collection<T> {
         }
 
         let min: T = this.data[0];
-        this.eraseAt(this.iterator());
+        this.erase(min);
 
         return min;
     }
@@ -36,34 +36,26 @@ export class BinaryHeap<T> extends Collection<T> {
         this.data = [];
     }
 
-    eraseAt(position: BiIterator<T>): void {
-        if (!this.validate(position)) {
-            throw Error();
-        }
+    erase(value: T): void {
+        let i: number = this.indexOf(value);
 
-        let it: BHeapIterator<T> = position as BHeapIterator<T>;
+        if (i >= 0) {
+            if (i == this.data.length - 1) { // last element
+                this.data.pop();
+            } else {
+                this.data[i] = this.data.pop();
 
-        if (it.index() == this.data.length - 1) { // last element
-            this.data.pop();
-        } else {
-            this.data[it.index()] = this.data.pop();
-
-            this.heapifyDown(it.index());
-        }
-    }
-
-    find(value: T): BiIterator<T> {
-        for (let i: number = 0; i < this.data.length; ++i) {
-            if (this.compare(this.data[i], value) == 0) {
-                return new BHeapIterator<T>(i, this.data, this);
+                this.heapifyDown(i);
             }
         }
-
-        return null;
     }
 
-    iterator(): BiIterator<T> {
-        return new BHeapIterator<T>(0, this.data, this);
+    find(value: T): boolean {
+        return this.indexOf(value) >= 0;
+    }
+
+    iterator(): Iterator<T> {
+        return new BHeapIterator<T>(this.data);
     }
 
     size(): number {
@@ -72,6 +64,19 @@ export class BinaryHeap<T> extends Collection<T> {
 
     toString(): string {
         return `[${this.data.toString()}]`;
+    }
+
+    private compare: Comparator<T>;
+    private data: T[];
+
+    private indexOf(value: T): number {
+        for (let i: number = 0; i < this.data.length; ++i) {
+            if (this.compare(this.data[i], value) == 0) {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
     private heapifyDown(i: number): void {
@@ -109,57 +114,27 @@ export class BinaryHeap<T> extends Collection<T> {
             iParent = indexParent(i);
         }
     }
-
-    private compare: Comparator<T>;
-    private data: T[];
 }
 
-class BHeapIterator<T> implements BiIterator<T> {
-    constructor(index: number, data: T[], heap: BinaryHeap<T>) {
-        this.currentIndex = index;
+class BHeapIterator<T> implements Iterator<T> {
+    constructor(data: T[]) {
         this.data = data;
-        this.heap = heap;
+        this.currentIndex = 0;
     }
 
-    index(): number {
-        return this.currentIndex;
-    }
-
-    back(): void {
-        --this.currentIndex;
-    }
-
-    forward(): void {
-        ++this.currentIndex;
-    }
-
-    hasNext(): boolean {
-        return this.valid() && this.currentIndex + 1 < this.data.length;
-    }
-
-    hasPrevious(): boolean {
-        return this.valid() && this.currentIndex - 1 >= 0;
-    }
-
-    source(): Collection<T> {
-        return this.heap;
-    }
-
-    valid(): boolean {
-        return 0 <= this.currentIndex && this.currentIndex < this.data.length;
-    }
-
-    value(): T {
-        if (!this.valid()) {
-            throw Error();
+    next(): IteratorResult<T> {
+        if (this.currentIndex >= this.data.length) {
+            return { value: null, done: true };
+        } else {
+            return {
+                value: this.data[this.currentIndex++],
+                done: false
+            };
         }
-
-        return this.data[this.currentIndex];
     }
 
     private currentIndex: number;
     private data: T[];
-    private heap: BinaryHeap<T>;
 }
 
 function indexLeft(index: number): number {

@@ -19,3 +19,5 @@ My implementations of data structures in TypeScript.
   * BFS
   * DFS
 * hash table
+
+UPDATE SPLAY TREE ERASE TESTS

@@ -1,4 +1,4 @@
-import { Collection, BiIterator, Comparator, defaultCompare } from './collection'
+import { Collection, Comparator, defaultCompare } from './collection'
 
 export class BinarySearchTree<T> extends Collection<T> {
     constructor(compare: Comparator<T> = defaultCompare) {
@@ -32,37 +32,24 @@ export class BinarySearchTree<T> extends Collection<T> {
         this.root = null;
     }
 
-    eraseAt(position: BiIterator<T>): void {
-        if (!this.validate(position)) {
-            throw Error();
+    erase(value: T): void {
+        let node: BSTNode<T> = this.findNode(value);
+
+        if (node != null) {
+            this.remove(this.findNode(value));
         }
-
-        let node: BSTNode<T> = (position as BSTIterator<T>).node();
-
-        this.remove(node);
     }
 
-    find(value: T): BiIterator<T> {
-        let node: BSTNode<T> = this.root;
-
-        while (node != null) {
-            let comparison: number = this.compare(value, node.value);
-
-            if (comparison < 0) {
-                node = node.left;
-            } else if (comparison > 0) {
-                node = node.right;
-            } else {
-                return new BSTIterator<T>(node, this);
-            }
-        }
-
-        return null;
+    find(value: T): boolean {
+        return this.findNode(value) != null;
     }
 
-    iterator(): BiIterator<T> {
-        let node: BSTNode<T> = this.root == null ? null : this.root.leftmost();
-        return new BSTIterator<T>(node, this);
+    iterator(): Iterator<T> {
+        if (this.root != null) {
+            return new BSTIterator<T>(this.root.leftmost());
+        } else {
+            return new BSTIterator<T>(null);
+        }
     }
 
     size(): number {
@@ -75,6 +62,34 @@ export class BinarySearchTree<T> extends Collection<T> {
 
     protected compare: Comparator<T>;
     protected root: BSTNode<T>;
+
+    protected findNode(value: T): BSTNode<T> {
+        if (this.empty()) {
+            return null;
+        }
+
+        let node: BSTNode<T> = this.root;
+
+        while (true) {
+            let comparison: number = this.compare(value, node.value);
+
+            if (comparison > 0) {
+                if (node.right != null) {
+                    node = node.right;
+                } else {
+                    return null;
+                }
+            } else if (comparison < 0) {
+                if (node.left != null) {
+                    node = node.left
+                } else {
+                    return null;
+                }
+            } else {
+                return node;
+            }
+        }
+    }
 
     protected insert(value: T,
                      makeNode: (value: T, parent: BSTNode<T>) => BSTNode<T>
@@ -196,120 +211,6 @@ export class BinarySearchTree<T> extends Collection<T> {
     }
 }
 
-export class BSTIterator<T> implements BiIterator<T> {
-    constructor(node: BSTNode<T>, tree: BinarySearchTree<T>) {
-        this.currentNode = node;
-        this.tree = tree;
-    }
-
-    node(): BSTNode<T> {
-        return this.currentNode;
-    }
-
-    back(): void {
-        if (!this.valid()) {
-            throw Error();
-        }
-
-        if (this.currentNode.left == null) {
-            let previous: BSTNode<T>;
-
-            do {
-                previous = this.currentNode;
-                this.currentNode = this.currentNode.parent;
-            } while (this.currentNode != null
-                     && previous != this.currentNode.right);
-        } else {
-            this.currentNode = this.currentNode.left.rightmost();
-        }
-    }
-
-    forward(): void {
-        if (!this.valid()) {
-            throw Error();
-        }
-
-        if (this.currentNode.right == null) {
-            let previous: BSTNode<T>;
-
-            do {
-                previous = this.currentNode;
-                this.currentNode = this.currentNode.parent;
-            } while (this.currentNode != null
-                     && previous != this.currentNode.left);
-        } else {
-            this.currentNode = this.currentNode.right.leftmost();
-        }
-    }
-
-    hasNext(): boolean {
-        if (!this.valid()) {
-            return false;
-        }
-
-        if (this.currentNode.right != null) {
-            return true;
-        }
-
-        let temp: BSTNode<T> = this.currentNode;
-        let previous: BSTNode<T>;
-
-        while (true) {
-            previous = temp;
-            temp = temp.parent;
-
-            if (temp == null) {
-                return false;
-            } else if (previous == temp.left) {
-                return true;
-            }
-        }
-    }
-
-    hasPrevious(): boolean {
-        if (!this.valid()) {
-            return false;
-        }
-
-        if (this.currentNode.left != null) {
-            return true;
-        }
-
-        let temp: BSTNode<T> = this.currentNode;
-        let previous: BSTNode<T>;
-
-        while (true) {
-            previous = temp;
-            temp = temp.parent;
-
-            if (temp == null) {
-                return false;
-            } else if (previous == temp.right) {
-                return true;
-            }
-        }
-    }
-
-    source(): Collection<T> {
-        return this.tree;
-    }
-
-    valid(): boolean {
-        return this.currentNode != null;
-    }
-
-    value(): T {
-        if (!this.valid()) {
-            throw Error();
-        }
-
-        return this.currentNode.value;
-    }
-
-    private currentNode: BSTNode<T>;
-    private tree: BinarySearchTree<T>;
-}
-
 export class BSTNode<T> {
     left: BSTNode<T>;
     parent: BSTNode<T>;
@@ -375,5 +276,50 @@ export class BSTNode<T> {
         let rightStr: string = this.right == null ? "" : this.right.toString();
 
         return `${this.value.toString()}[${leftStr}][${rightStr}]`
+    }
+}
+
+class BSTIterator<T> implements Iterator<T> {
+    constructor(node: BSTNode<T>) {
+        this.currentNode = node;
+
+    }
+
+    next(): IteratorResult<T> {
+        let result: IteratorResult<T>;
+
+        if (this.currentNode == null) {
+            result = { value: null, done: true };
+        } else {
+            result = { value: this.currentNode.value, done: false };
+        }
+
+        this.currentNode = this.nextNode();
+
+        return result;
+    }
+
+    private currentNode: BSTNode<T>;
+
+    private nextNode(): BSTNode<T> {
+        if (this.currentNode == null) {
+            return null;
+        }
+
+        let nextNode: BSTNode<T>;
+
+        if (this.currentNode.right == null) {
+            let previous: BSTNode<T>;
+            nextNode = this.currentNode;
+
+            do {
+                previous = nextNode;
+                nextNode = nextNode.parent;
+            } while (nextNode != null && previous != nextNode.left);
+        } else {
+            nextNode = this.currentNode.right.leftmost();
+        }
+
+        return nextNode;
     }
 }

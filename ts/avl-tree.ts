@@ -1,5 +1,5 @@
-import { BiIterator, Comparator, defaultCompare } from './collection'
-import { BinarySearchTree, BSTIterator, BSTNode } from './binary-search-tree'
+import { Comparator, defaultCompare } from './collection'
+import { BinarySearchTree,  BSTNode } from './binary-search-tree'
 
 export class AVLTree<T> extends BinarySearchTree<T> {
     constructor(compare: Comparator<T> = defaultCompare) {
@@ -19,16 +19,15 @@ export class AVLTree<T> extends BinarySearchTree<T> {
         }
     }
 
-    eraseAt(position: BiIterator<T>): void {
-        if (!this.validate(position)) {
-            throw Error();
-        }
+    erase(value: T): void {
+        let node: BSTNode<T> = this.findNode(value);
 
-        let node: BSTNode<T> = (position as BSTIterator<T>).node();
-        let rebalanceNode = super.remove(node) as AVLNode<T>;
+        if (node != null) {
+            let rebalanceNode = super.remove(node) as AVLNode<T>;
 
-        if (rebalanceNode != null) {
-            this.rebalance(rebalanceNode);
+            if (rebalanceNode != null) {
+                this.rebalance(rebalanceNode);
+            }
         }
     }
 

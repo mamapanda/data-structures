@@ -1,5 +1,5 @@
-import { BiIterator, Comparator, defaultCompare } from './collection'
-import { BinarySearchTree, BSTIterator, BSTNode } from './binary-search-tree'
+import { Comparator, defaultCompare } from './collection'
+import { BinarySearchTree, BSTNode } from './binary-search-tree'
 
 export class SplayTree<T> extends BinarySearchTree<T> {
     constructor(compare: Comparator<T> = defaultCompare) {
@@ -19,40 +19,30 @@ export class SplayTree<T> extends BinarySearchTree<T> {
         }
     }
 
-    eraseAt(position: BiIterator<T>): void {
-        if (!this.validate(position)) {
-            throw Error();
-        }
+    erase(value: T): void {
+        let node: BSTNode<T> = this.findNode(value);
 
-        let node: BSTNode<T> = (position as BSTIterator<T>).node();
+        if (node != null) {
+            let parent: BSTNode<T> = node.parent;
 
-        this.splay(node); // node becomes this.root
+            super.remove(node);
 
-        if (this.root.left == null) {
-            this.root = node.right;
-        } else {
-            this.root = node.left;
-            this.root.parent = null;
-
-            this.splay(this.root.rightmost());
-
-            if (node.right == null) {
-                this.root.right = null;
-            } else {
-                this.root.right = node.right;
-                this.root.right.parent = this.root;
+            if (parent != null) {
+                this.splay(parent);
             }
         }
     }
 
-    find(value: T): BiIterator<T> {
-        let it: BSTIterator<T> = super.find(value) as BSTIterator<T>;
+    find(value: T): boolean {
+        let node: BSTNode<T> = super.findNode(value);
 
-        if (it != null) {
-            this.splay(it.node());
+        if (node != null) {
+            this.splay(node);
+
+            return true;
+        } else {
+            return false;
         }
-
-        return it;
     }
 
     max(): T {
