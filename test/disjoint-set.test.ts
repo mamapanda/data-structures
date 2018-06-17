@@ -73,7 +73,7 @@ function testDisjointSet(ctor: new (n: number) => DisjointSet) {
     })
 }
 
-describe('DisjointSet', () => {
-    describe('QuickFind', () => testDisjointSet(QuickFind));
-    describe('QuickUnion', () => testDisjointSet(QuickUnion));
+describe('Disjoint Set Test', () => {
+    describe('Quick Find', () => testDisjointSet(QuickFind));
+    describe('Quick Union', () => testDisjointSet(QuickUnion));
 });

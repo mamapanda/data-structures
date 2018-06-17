@@ -56,19 +56,11 @@ export class HashTable<T> extends Collection<T> {
     }
 
     toString(): string {
-        let xs: T[] = [];
-
-        for (let i: number = 0; i < this.data.length; ++i) {
-            if (this.data[i] != undefined) {
-                xs.push(this.data[i]);
-            }
-        }
-
-        return `[${xs.toString()}]`;
+        return `[${this.data.toString()}]`;
     }
 
     private data: T[]; // undefined == never inserted, null == deleted value
-    private equal: (lhs: T, rhs: T) => boolean;
+    private equal: Equality<T>;
     private hash: (value: T) => number;
 
     private indexOf(value: T): number {
@@ -78,10 +70,16 @@ export class HashTable<T> extends Collection<T> {
             if (this.equal(this.data[i], value)) {
                 return i;
             }
+
+            ++i;
         }
 
         return -1;
     }
+}
+
+export function modHash(divisor: number, multiplier: number = 1) {
+    return (x: number) => (multiplier * x) % divisor;
 }
 
 class HTIterator<T> implements Iterator<T> {
@@ -91,15 +89,15 @@ class HTIterator<T> implements Iterator<T> {
     }
 
     next(): IteratorResult<T> {
-        while (this.index < this.data.length && this.data[this.index] == undefined) {
+        while (this.index < this.data.length) {
+            if (this.data[this.index] != undefined) {
+                return { value: this.data[this.index++], done: false };
+            }
+
             ++this.index;
         }
 
-        if (this.index < this.data.length) {
-            return { value: this.data[this.index++], done: false };
-        } else {
-            return { value: null, done: true };
-        }
+        return { value: null, done: true };
     }
 
     private data: T[];

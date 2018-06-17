@@ -2,5 +2,6 @@
 My implementations of data structures in TypeScript.
 
 # TODO
-* hash table
+* hash table tests
+* red-black tree
 
