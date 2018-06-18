@@ -54,16 +54,16 @@ export class BinaryHeap<T> extends Collection<T> {
         return this.indexOf(value) >= 0;
     }
 
+    *iterator(): Iterator<T> {
+        yield* this.data;
+    }
+
     size(): number {
         return this.data.length;
     }
 
     toString(): string {
         return `[${this.data.toString()}]`;
-    }
-
-    *[Symbol.iterator](): Iterator<T> {
-        yield* this.data;
     }
 
     private compare: Comparator<T>;

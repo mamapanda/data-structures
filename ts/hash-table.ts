@@ -39,6 +39,14 @@ export class HashTable<T> extends Collection<T> {
         return this.indexOf(value) >= 0;
     }
 
+    *iterator(): Iterator<T> {
+        for (let x of this.data) {
+            if (x != undefined) {
+                yield x;
+            }
+        }
+    }
+
     size(): number {
         let count: number = 0;
 
@@ -53,14 +61,6 @@ export class HashTable<T> extends Collection<T> {
 
     toString(): string {
         return `[${this.data.toString()}]`;
-    }
-
-    *[Symbol.iterator](): Iterator<T> {
-        for (let x of this.data) {
-            if (x != undefined) {
-                yield x;
-            }
-        }
     }
 
     private data: T[]; // undefined == never inserted, null == deleted value

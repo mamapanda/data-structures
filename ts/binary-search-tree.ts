@@ -44,16 +44,16 @@ export class BinarySearchTree<T> extends Collection<T> {
         return this.findNode(value) != null;
     }
 
+    iterator(): Iterator<T> {
+        return iterate(this.root);
+    }
+
     size(): number {
         return this.root == null ? 0 : this.root.nChildren() + 1;
     }
 
     toString(): string {
         return `<${this.root == null ? "" : this.root.toString()}>`
-    }
-
-    [Symbol.iterator](): Iterator<T> {
-        return iterate(this.root);
     }
 
     protected compare: Comparator<T>;

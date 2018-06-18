@@ -163,6 +163,12 @@ export class LinkedList<T> extends List<T> {
         return false;
     }
 
+    *iterator(): Iterator<T> {
+        for (let node: LLNode<T> = this.head; node != null; node = node.next) {
+            yield node.value;
+        }
+    }
+
     size(): number {
         let size: number = 0;
 
@@ -185,12 +191,6 @@ export class LinkedList<T> extends List<T> {
         }
 
         return str + ']';
-    }
-
-    *[Symbol.iterator](): Iterator<T> {
-        for (let node: LLNode<T> = this.head; node != null; node = node.next) {
-            yield node.value;
-        }
     }
 
     private equal: Equality<T>;

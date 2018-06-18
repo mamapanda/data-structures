@@ -9,6 +9,26 @@ export class BTree<T> extends Collection<T> {
         this.root = new BNode<T>(true);
     }
 
+    max(): T {
+        let node: BNode<T> = this.root.rightmost();
+
+        if (node.values.length > 0) {
+            return node.values[node.values.length - 1];
+        } else {
+            throw Error();
+        }
+    }
+
+    min(): T {
+        let node: BNode<T> = this.root.leftmost();
+
+        if (node.values.length > 0) {
+            return node.values[0];
+        } else {
+            throw Error();
+        }
+    }
+
     add(value: T): void {
         let node: BNode<T> = this.root;
         let i: number;
@@ -65,16 +85,16 @@ export class BTree<T> extends Collection<T> {
         return this.findLocation(value)[0] != null;
     }
 
+    iterator(): Iterator<T> {
+        return iterate(this.root);
+    }
+
     size(): number {
         return this.sizeOf(this.root);
     }
 
     toString(): string {
-        return `<(${this.root.toString()})>`
-    }
-
-    [Symbol.iterator](): Iterator<T> {
-        return iterate(this.root);
+        return `<${this.root.toString()}>`
     }
 
     private compare: Comparator<T>;
@@ -102,16 +122,11 @@ export class BTree<T> extends Collection<T> {
 
     private rebalanceOver(node: BNode<T>): void {
         if (node.values.length > 2 * this.minDegree - 1) {
-            let left: BNode<T> = node;
-            let right: BNode<T> = new BNode<T>(node.leaf());
+            let left: BNode<T>;
+            let right: BNode<T>;
             let separator: T;
 
-            right.values = left.values.splice(this.minDegree, left.values.length);
-            if (!left.leaf()) {
-                right.children = left.children.splice(this.minDegree + 1,
-                                                      left.children.length);
-            }
-            separator = left.values.pop();
+            [separator, left, right] = this.split(node);
 
             if (node == this.root) {
                 this.root = new BNode<T>(false);
@@ -169,11 +184,29 @@ export class BTree<T> extends Collection<T> {
     private sizeOf(node: BNode<T>): number {
         let size: number = node.values.length;
 
-        for (let i: number = 0; i < node.children.length; ++i) {
-            size += this.sizeOf(node.children[i]);
+        if (!node.leaf()) {
+            for (let i: number = 0; i < node.children.length; ++i) {
+                size += this.sizeOf(node.children[i]);
+            }
         }
 
         return size;
+    }
+
+    private split(node: BNode<T>): [T, BNode<T>, BNode<T>] {
+        let left: BNode<T> = node;
+        let right: BNode<T> = new BNode<T>(left.leaf());
+
+        right.values = left.values.splice(this.minDegree + 1,
+                                          left.values.length);
+        if (!left.leaf()) {
+            right.children = left.children.splice(this.minDegree + 1,
+                                                  left.children.length);
+        }
+
+        let separator: T = left.values.pop();
+
+        return [separator, left, right];
     }
 
     private tryRotateLeft(node: BNode<T>): boolean {
@@ -277,8 +310,10 @@ class BNode<T> {
     toString(): string {
         let str: string = `(${this.values.toString()})`;
 
-        for (let child of this.children) {
-            str += `[${child.toString()}]`;
+        if (!this.leaf()) {
+            for (let child of this.children) {
+                str += `[${child.toString()}]`;
+            }
         }
 
         return str;
