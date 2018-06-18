@@ -54,16 +54,16 @@ export class BinaryHeap<T> extends Collection<T> {
         return this.indexOf(value) >= 0;
     }
 
-    iterator(): Iterator<T> {
-        return new BHeapIterator<T>(this.data);
-    }
-
     size(): number {
         return this.data.length;
     }
 
     toString(): string {
         return `[${this.data.toString()}]`;
+    }
+
+    *[Symbol.iterator](): Iterator<T> {
+        yield* this.data;
     }
 
     private compare: Comparator<T>;
@@ -114,27 +114,6 @@ export class BinaryHeap<T> extends Collection<T> {
             iParent = indexParent(i);
         }
     }
-}
-
-class BHeapIterator<T> implements Iterator<T> {
-    constructor(data: T[]) {
-        this.data = data;
-        this.currentIndex = 0;
-    }
-
-    next(): IteratorResult<T> {
-        if (this.currentIndex >= this.data.length) {
-            return { value: null, done: true };
-        } else {
-            return {
-                value: this.data[this.currentIndex++],
-                done: false
-            };
-        }
-    }
-
-    private currentIndex: number;
-    private data: T[];
 }
 
 function indexLeft(index: number): number {

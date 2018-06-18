@@ -39,10 +39,6 @@ export class HashTable<T> extends Collection<T> {
         return this.indexOf(value) >= 0;
     }
 
-    iterator(): Iterator<T> {
-        return new HTIterator(this.data);
-    }
-
     size(): number {
         let count: number = 0;
 
@@ -57,6 +53,14 @@ export class HashTable<T> extends Collection<T> {
 
     toString(): string {
         return `[${this.data.toString()}]`;
+    }
+
+    *[Symbol.iterator](): Iterator<T> {
+        for (let x of this.data) {
+            if (x != undefined) {
+                yield x;
+            }
+        }
     }
 
     private data: T[]; // undefined == never inserted, null == deleted value
@@ -80,26 +84,4 @@ export class HashTable<T> extends Collection<T> {
 
 export function modHash(divisor: number, multiplier: number = 1) {
     return (x: number) => (multiplier * x) % divisor;
-}
-
-class HTIterator<T> implements Iterator<T> {
-    constructor(data: T[]) {
-        this.data = data;
-        this.index = 0;
-    }
-
-    next(): IteratorResult<T> {
-        while (this.index < this.data.length) {
-            if (this.data[this.index] != undefined) {
-                return { value: this.data[this.index++], done: false };
-            }
-
-            ++this.index;
-        }
-
-        return { value: null, done: true };
-    }
-
-    private data: T[];
-    private index: number;
 }

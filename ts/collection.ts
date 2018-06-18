@@ -3,8 +3,8 @@ export abstract class Collection<T> {
     abstract clear(): void;
     abstract erase(value: T): void;
     abstract find(value: T): boolean;
-    abstract iterator(): Iterator<T>;
     abstract size(): number;
+    abstract [Symbol.iterator](): Iterator<T>;
 
     empty(): boolean {
         return this.size() == 0;
@@ -18,10 +18,6 @@ export abstract class Collection<T> {
         }
 
         return xs;
-    }
-
-    [Symbol.iterator](): Iterator<T> {
-        return this.iterator();
     }
 }
 

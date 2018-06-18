@@ -267,6 +267,29 @@ class BNode<T> {
     }
 }
 
+class BIterator<T> implements Iterator<T> {
+    constructor(node: BNode<T>) {
+        this.currentNode = node;
+        this.currentIndex = 0;
+    }
+
+    next(): IteratorResult<T> {
+        if (this.currentNode == null) {
+            return { value: null, done: true };
+        } else {
+            let result: IteratorResult<T> = {
+                value: this.currentNode.values[this.currentIndex],
+                done: false
+            };
+
+            ++this.currentIndex;
+        }
+    }
+
+    private currentNode: BNode<T>;
+    private currentIndex: number;
+}
+
 // Returns index of x if found. Otherwise, returns index of last element checked.
 function binarySearch<T>(node: BNode<T>, x: T, compare: Comparator<T>): number {
     let low: number = 0;

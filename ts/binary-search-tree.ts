@@ -44,20 +44,16 @@ export class BinarySearchTree<T> extends Collection<T> {
         return this.findNode(value) != null;
     }
 
-    iterator(): Iterator<T> {
-        if (this.root != null) {
-            return new BSTIterator<T>(this.root.leftmost());
-        } else {
-            return new BSTIterator<T>(null);
-        }
-    }
-
     size(): number {
         return this.root == null ? 0 : this.root.nChildren() + 1;
     }
 
     toString(): string {
         return `<${this.root == null ? "" : this.root.toString()}>`
+    }
+
+    [Symbol.iterator](): Iterator<T> {
+        return iterate(this.root);
     }
 
     protected compare: Comparator<T>;
@@ -279,46 +275,10 @@ export class BSTNode<T> {
     }
 }
 
-class BSTIterator<T> implements Iterator<T> {
-    constructor(node: BSTNode<T>) {
-        this.currentNode = node;
-    }
-
-    next(): IteratorResult<T> {
-        let result: IteratorResult<T>;
-
-        if (this.currentNode == null) {
-            result = { value: null, done: true };
-        } else {
-            result = { value: this.currentNode.value, done: false };
-        }
-
-        this.currentNode = this.nextNode();
-
-        return result;
-    }
-
-    private currentNode: BSTNode<T>;
-
-    private nextNode(): BSTNode<T> {
-        if (this.currentNode == null) {
-            return null;
-        }
-
-        let nextNode: BSTNode<T>;
-
-        if (this.currentNode.right == null) {
-            let previous: BSTNode<T>;
-            nextNode = this.currentNode;
-
-            do {
-                previous = nextNode;
-                nextNode = nextNode.parent;
-            } while (nextNode != null && previous != nextNode.left);
-        } else {
-            nextNode = this.currentNode.right.leftmost();
-        }
-
-        return nextNode;
+function* iterate<T>(node: BSTNode<T>): Iterator<T> {
+    if (node != null) {
+        yield* iterate(node.left)[Symbol.iterator]();
+        yield node.value;
+        yield* iterate(node.right)[Symbol.iterator]();
     }
 }
