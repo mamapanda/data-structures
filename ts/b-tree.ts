@@ -30,6 +30,10 @@ export class BTree<T> extends Collection<T> {
     }
 
     add(value: T): void {
+        if (this.empty()) {
+            this.root.values.push(value);
+        }
+
         let node: BNode<T> = this.root;
         let i: number;
         let cmpResult: number;
@@ -102,6 +106,10 @@ export class BTree<T> extends Collection<T> {
     private root: BNode<T>;
 
     private findLocation(value: T): [BNode<T>, number] {
+        if (this.empty()) {
+            return [null, -1];
+        }
+
         let node: BNode<T> = this.root;
 
         while (true) {
@@ -118,6 +126,20 @@ export class BTree<T> extends Collection<T> {
                 node = node.children[i + 1];
             }
         }
+    }
+
+    private merge(left: BNode<T>, right: BNode<T>, leftIndex: number): void {
+        let separator: T = left.parent.values.splice(leftIndex, 1)[0];
+
+        left.values.push(separator);
+        left.values.push(...right.values);
+
+        if (!left.leaf()) {
+            left.children.push(...right.children);
+            right.children.forEach(n => n.parent = left);
+        }
+
+        left.parent.children.splice(leftIndex + 1, 1); // remove right
     }
 
     private rebalanceOver(node: BNode<T>): void {
@@ -142,7 +164,7 @@ export class BTree<T> extends Collection<T> {
                 }
 
                 node.parent.values.splice(i, 0, separator);
-                node.parent.children.splice(i, 0, left, right);
+                node.parent.children.splice(i, 1, left, right); // delete node as well
                 left.parent = node.parent;
                 right.parent = node.parent;
 
@@ -158,27 +180,23 @@ export class BTree<T> extends Collection<T> {
                 let i: number = node.parent.children.indexOf(node);
 
                 if (leftSibling != null) { // merge node into left sibling
-                    let separator: T = node.parent.values.splice(i - 1, 1)[0];
-
-                    leftSibling.values.push(separator);
-                    leftSibling.values.push(...node.values);
-                    leftSibling.children.push(...node.children);
-
-                    node.parent.children.splice(i, 1); // remove node
+                    this.merge(leftSibling, node, i - 1);
                 } else { // merge right sibling into node
-                    let rightSibling: BNode<T> = node.rightSibling();
-                    let separator: T = node.parent.values.splice(i, 1)[0];
-
-                    node.values.push(separator);
-                    node.values.push(...rightSibling.values);
-                    node.children.push(...rightSibling.children);
-
-                    node.parent.children.splice(i + 1, 1); // remove right sibling
+                    this.merge(node, node.rightSibling(), i);
                 }
 
                 this.rebalanceUnder(node.parent);
             }
+        } else if (node == this.root && node.values.length == 0) {
+            if (!this.root.leaf()) { // should have been a merge step
+                if (this.root.children.length != 1) {
+                    throw Error();
+                }
+
+                this.root = this.root.children[0];
+            }
         }
+        console.log(this.toString());
     }
 
     private sizeOf(node: BNode<T>): number {
@@ -202,6 +220,7 @@ export class BTree<T> extends Collection<T> {
         if (!left.leaf()) {
             right.children = left.children.splice(this.minDegree + 1,
                                                   left.children.length);
+            right.children.forEach(n => n.parent = right);
         }
 
         let separator: T = left.values.pop();
