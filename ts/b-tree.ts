@@ -69,6 +69,14 @@ export class BTree<T> extends Collection<T> {
         return this.sizeOf(this.root);
     }
 
+    toString(): string {
+        return `<(${this.root.toString()})>`
+    }
+
+    [Symbol.iterator](): Iterator<T> {
+        return iterate(this.root);
+    }
+
     private compare: Comparator<T>;
     private minDegree: number;
     private root: BNode<T>;
@@ -265,29 +273,16 @@ class BNode<T> {
             return this.parent.children[i + 1];
         }
     }
-}
 
-class BIterator<T> implements Iterator<T> {
-    constructor(node: BNode<T>) {
-        this.currentNode = node;
-        this.currentIndex = 0;
-    }
+    toString(): string {
+        let str: string = `(${this.values.toString()})`;
 
-    next(): IteratorResult<T> {
-        if (this.currentNode == null) {
-            return { value: null, done: true };
-        } else {
-            let result: IteratorResult<T> = {
-                value: this.currentNode.values[this.currentIndex],
-                done: false
-            };
-
-            ++this.currentIndex;
+        for (let child of this.children) {
+            str += `[${child.toString()}]`;
         }
-    }
 
-    private currentNode: BNode<T>;
-    private currentIndex: number;
+        return str;
+    }
 }
 
 // Returns index of x if found. Otherwise, returns index of last element checked.
@@ -311,4 +306,17 @@ function binarySearch<T>(node: BNode<T>, x: T, compare: Comparator<T>): number {
     }
 
     return mid; // x not found
+}
+
+function* iterate<T>(node: BNode<T>): Iterator<T> {
+    if (node.leaf()) {
+        yield* node.values;
+    } else {
+        yield* iterate(node.children[0])[Symbol.iterator]();
+
+        for (let i: number = 0; i < node.values.length; ++i) {
+            yield node.values[i];
+            yield* iterate(node.children[i + 1])[Symbol.iterator]();
+        }
+    }
 }
