@@ -282,7 +282,6 @@ export class BSTNode<T> {
 class BSTIterator<T> implements Iterator<T> {
     constructor(node: BSTNode<T>) {
         this.currentNode = node;
-
     }
 
     next(): IteratorResult<T> {
