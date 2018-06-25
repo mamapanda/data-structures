@@ -554,4 +554,63 @@ describe('Linked List Test', () => {
             expect(list.toString()).to.be.eq(`[${xs.toString()}]`);
         })
     })
+    describe('LinkedList::update', () => {
+        it('Empty List', () => {
+            let list: LinkedList<number> = new LinkedList<number>();
+
+            expect(() => list.update(0, 9)).to.throw();
+            expect(list.toArray()).to.deep.equal([]);
+        });
+        it('First Element', () => {
+            let list: LinkedList<number> = new LinkedList<number>();
+            let xs: number[] = [3, 4, -1, 2, 3, 0];
+
+            xs.forEach(x => list.add(x));
+
+            list.update(0, 10);
+            xs[0] = 10;
+
+            expect(list.toArray()).to.be.deep.equal(xs);
+        });
+        it('Middle Element', () => {
+            let list: LinkedList<number> = new LinkedList<number>();
+            let xs: number[] = [3, 4, -1, 2, 3, 0];
+
+            xs.forEach(x => list.add(x));
+
+            list.update(3, 99);
+            xs[3] = 99;
+
+            expect(list.toArray()).to.be.deep.equal(xs);
+        });
+        it('Last Element', () => {
+            let list: LinkedList<number> = new LinkedList<number>();
+            let xs: number[] = [3, 4, -1, 2, 3, 0];
+
+            xs.forEach(x => list.add(x));
+
+            list.update(list.size() - 1, -50);
+            xs[xs.length - 1] = -50;
+
+            expect(list.toArray()).to.be.deep.equal(xs);
+        });
+        it('Out of Bounds', () => {
+            let list: LinkedList<number> = new LinkedList<number>();
+            let xs: number[] = [3, 4, -1, 2, 3, 0];
+
+            xs.forEach(x => list.add(x));
+
+            expect(() => list.update(-1, 0)).to.throw();
+            expect(list.toArray()).to.deep.equal(xs);
+        });
+        it('Out of Bounds', () => {
+            let list: LinkedList<number> = new LinkedList<number>();
+            let xs: number[] = [3, 4, -1, 2, 3, 0];
+
+            xs.forEach(x => list.add(x));
+
+            expect(() => list.update(xs.length + 1, 0)).to.throw();
+            expect(list.toArray()).to.deep.equal(xs);
+        });
+    });
 });

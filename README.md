@@ -13,5 +13,4 @@ My implementations of data structures in TypeScript.
 * Splay Tree
 
 ### TODO
-* BitSet tests
 * List update(index: number) Method

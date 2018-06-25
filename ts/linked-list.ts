@@ -193,6 +193,10 @@ export class LinkedList<T> extends List<T> {
         return str + ']';
     }
 
+    update(index: number, value: T): void {
+        this.nodeAt(index).value = value;
+    }
+
     private equal: Equality<T>;
     private head: LLNode<T>;
     private last: LLNode<T>;
