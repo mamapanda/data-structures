@@ -196,7 +196,6 @@ export class BTree<T> extends Collection<T> {
                 this.root = this.root.children[0];
             }
         }
-        console.log(this.toString());
     }
 
     private sizeOf(node: BNode<T>): number {
