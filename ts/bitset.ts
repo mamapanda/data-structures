@@ -2,6 +2,10 @@ export class BitSet {
     readonly size: number;
 
     constructor(size: number) {
+        if (size < 0) {
+            throw Error();
+        }
+
         this.buffer = new Array((size >> 5) + 1);
         this.buffer.fill(0);
 
@@ -9,7 +13,13 @@ export class BitSet {
     }
 
     all(): boolean {
-        return this.buffer.every(element => element == ~0);
+        for (let i: number = 0; i < this.size; ++i) {
+            if (!this.at(i)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     at(index: number): boolean {
@@ -36,17 +46,13 @@ export class BitSet {
     }
 
     toString(): string {
-        let str: string = "";
-        let padStr: string = new Array(33).join('0');
+        let buffer: string[] = [];
 
-        for (let element of this.buffer) {
-            let elemStr: string = (element >>> 0).toString(2); // (-1).toString(2) == "-1"
-            let padding: string = padStr.substring(0, 32 - str.length);
-
-            str += padding + elemStr;
+        for (let i: number = 0; i < this.size; ++i) {
+            buffer.push(this.at(i) ? '1' : '0');
         }
 
-        return str;
+        return buffer.join('');
     }
 
     update(index: number, value: boolean): void {
