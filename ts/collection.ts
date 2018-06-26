@@ -25,10 +25,13 @@ export abstract class Collection<T> {
     }
 }
 
-export abstract class List<T> extends Collection<T> {
-    abstract addAt(index: number, value: T): void;
+export abstract class Indexable<T> extends Collection<T> {
     abstract at(index: number): T;
     abstract eraseAt(index: number): void;
+}
+
+export abstract class List<T> extends Indexable<T> {
+    abstract addAt(index: number, value: T): void;
     abstract update(index: number, value: T): void;
 }
 
