@@ -144,11 +144,7 @@ export class BTree<T> extends Collection<T> {
 
     private rebalanceOver(node: BNode<T>): void {
         if (node.values.length > 2 * this.minDegree - 1) {
-            let left: BNode<T>;
-            let right: BNode<T>;
-            let separator: T;
-
-            [separator, left, right] = this.split(node);
+            let [separator, left, right]: [T, BNode<T>, BNode<T>] = this.split(node);
 
             if (node == this.root) {
                 this.root = new BNode<T>(false);

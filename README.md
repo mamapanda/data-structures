@@ -6,11 +6,9 @@ My implementations of data structures in TypeScript.
 * B-Tree
 * Binary Heap
 * Binary Search Tree
+* Bit Set
 * Hash Table
 * Linked List
 * Quick Find
 * Quick Union
 * Splay Tree
-
-### TODO
-* List update(index: number) Method

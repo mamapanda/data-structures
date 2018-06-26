@@ -180,17 +180,7 @@ export class LinkedList<T> extends List<T> {
     }
 
     toString(): string {
-        if (this.head == null) {
-            return '[]';
-        }
-
-        let str: string = `[${this.head.value.toString()}`;
-
-        for (let node: LLNode<T> = this.head.next; node != null; node = node.next) {
-            str += `,${node.value.toString()}`;
-        }
-
-        return str + ']';
+        return `[${this.toArray().toString()}]`;
     }
 
     update(index: number, value: T): void {

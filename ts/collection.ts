@@ -29,7 +29,6 @@ export abstract class List<T> extends Collection<T> {
     abstract addAt(index: number, value: T): void;
     abstract at(index: number): T;
     abstract eraseAt(index: number): void;
-    abstract find(value: T): boolean;
     abstract update(index: number, value: T): void;
 }
 

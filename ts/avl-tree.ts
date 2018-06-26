@@ -38,7 +38,7 @@ export class AVLTree<T> extends BinarySearchTree<T> {
             node.updateSubHeight();
             subroot.updateSubHeight();
 
-            node = subroot.parentAVL();
+            node = this.rebalanceAt(node).parentAVL();
         }
     }
 
