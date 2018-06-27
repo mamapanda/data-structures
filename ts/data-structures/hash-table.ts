@@ -1,6 +1,14 @@
 import { Collection, Equality, defaultEquality } from './collection';
 
+/**
+ * A hash table relying on linear probing for collisions.
+ */
 export class HashTable<T> extends Collection<T> {
+    /**
+     * The constructor.
+     * @param hash the hash function to use
+     * @param equal the equality function to use when comparing values in _this_
+     */
     constructor(hash: (value: T) => number, equal: Equality<T> = defaultEquality) {
         super();
 
@@ -9,6 +17,9 @@ export class HashTable<T> extends Collection<T> {
         this.hash = hash;
     }
 
+    /**
+     * See parent documentation.
+     */
     add(value: T): void {
         let i: number = this.hash(value);
 
@@ -23,10 +34,16 @@ export class HashTable<T> extends Collection<T> {
         this.data[i] = value;
     }
 
+    /**
+     * See parent documentation.
+     */
     clear(): void {
         this.data = [];
     }
 
+    /**
+     * See parent documentation.
+     */
     erase(value: T): void {
         let i: number = this.indexOf(value);
 
@@ -35,10 +52,16 @@ export class HashTable<T> extends Collection<T> {
         }
     }
 
+    /**
+     * See parent documentation.
+     */
     find(value: T): boolean {
         return this.indexOf(value) >= 0;
     }
 
+    /**
+     * See parent documentation.
+     */
     *iterator(): Iterator<T> {
         for (let x of this.data) {
             if (x != undefined) {
@@ -47,6 +70,9 @@ export class HashTable<T> extends Collection<T> {
         }
     }
 
+    /**
+     * See parent documentation.
+     */
     size(): number {
         let count: number = 0;
 
@@ -59,14 +85,36 @@ export class HashTable<T> extends Collection<T> {
         return count;
     }
 
+    /**
+     * See parent documentation.
+     */
     toString(): string {
         return `[${this.data.toString()}]`;
     }
 
-    private data: T[]; // undefined == never inserted, null == deleted value
+    /**
+     * The underlying array representation of _this_.
+     * If a value at a slot is null, then a value was placed there before
+     * and deleted later. If the value is undefined, then no value was ever
+     * inserted into the slot.
+     */
+    private data: T[];
+
+    /**
+     * The function to use when checking if two values are equal.
+     */
     private equal: Equality<T>;
+
+    /**
+     * The hash function to use.
+     */
     private hash: (value: T) => number;
 
+    /**
+     * Calculates the index of the given value inside _this_.data.
+     * @param value the value
+     * @return the index, or -1 if the value is not found
+     */
     private indexOf(value: T): number {
         let i: number = this.hash(value);
 

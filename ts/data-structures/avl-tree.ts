@@ -1,11 +1,21 @@
 import { Comparator, defaultCompare } from './collection'
-import { BinarySearchTree,  BSTNode } from './binary-search-tree'
+import { BinarySearchTree, BSTNode } from './binary-search-tree'
 
+/**
+ * An AVL tree.
+ */
 export class AVLTree<T> extends BinarySearchTree<T> {
+    /**
+     * The constructor.
+     * @param compare the function to use when comparing values in _this_
+     */
     constructor(compare: Comparator<T> = defaultCompare) {
         super(compare);
     }
 
+    /**
+     * See parent documentation.
+     */
     add(value: T): void {
         let node: AVLNode<T>;
         let inserted: boolean = super.insert(value, (v, p) => {
@@ -19,6 +29,9 @@ export class AVLTree<T> extends BinarySearchTree<T> {
         }
     }
 
+    /**
+     * See parent documentation.
+     */
     erase(value: T): void {
         let node: BSTNode<T> = this.findNode(value);
 
@@ -31,7 +44,12 @@ export class AVLTree<T> extends BinarySearchTree<T> {
         }
     }
 
-    protected rebalance(node: AVLNode<T>) {
+    /**
+     * Rebalances _this_ if _this_ is unbalanced, starting from a given node
+     * all the way up to the root of _this_.
+     * @param node the node to start rebalancing from
+     */
+    protected rebalance(node: AVLNode<T>): void {
         while (node != null) {
             let subroot: AVLNode<T> = this.rebalanceAt(node);
 
@@ -42,6 +60,13 @@ export class AVLTree<T> extends BinarySearchTree<T> {
         }
     }
 
+    /**
+     * Rebalances _this_ at a particular node. It is assumed that the node
+     * is present in _this_.
+     * @param node the node to rebalance at
+     * @return the new node at the position where the parameter node originally was
+     * before the rebalance
+     */
     protected rebalanceAt(node: AVLNode<T>): AVLNode<T> {
         let balanceFactor: number = node.balanceFactor();
 
@@ -68,6 +93,9 @@ export class AVLTree<T> extends BinarySearchTree<T> {
         }
     }
 
+    /**
+     * See parent documentation.
+     */
     protected rotateLeft(node: AVLNode<T>): AVLNode<T> {
         let subroot: AVLNode<T> = super.rotateLeft(node) as AVLNode<T>;
 
@@ -77,6 +105,9 @@ export class AVLTree<T> extends BinarySearchTree<T> {
         return subroot;
     }
 
+    /**
+     * See parent documentation.
+     */
     protected rotateRight(node: AVLNode<T>): AVLNode<T> {
         let subroot: AVLNode<T> = super.rotateRight(node) as AVLNode<T>;
 
@@ -87,9 +118,22 @@ export class AVLTree<T> extends BinarySearchTree<T> {
     }
 }
 
+/**
+ * An AVL tree node.
+ */
 class AVLNode<T> extends BSTNode<T> {
+    /**
+     * The height of the subtree rooted at _this_.
+     */
     subHeight: number;
 
+    /**
+     * The constructor.
+     * @param value the value to store in _this_
+     * @param parent the parent of _this_
+     * @param left the left child of _this_
+     * @param right the right child of _this_
+     */
     constructor(value: T,
                 parent: AVLNode<T>,
                 left: AVLNode<T> = null,
@@ -99,13 +143,20 @@ class AVLNode<T> extends BSTNode<T> {
         this.updateSubHeight();
     }
 
+    /**
+     * @return the balance factor of _this_
+     */
     balanceFactor(): number {
-        let leftH: number = (this.leftAVL() && this.leftAVL().subHeight) || 0;
-        let rightH: number = (this.rightAVL() && this.rightAVL().subHeight) || 0;
+        // The 1's cancel out if both children exist.
+        let leftH: number = (this.leftAVL() && this.leftAVL().subHeight + 1) || 0;
+        let rightH: number = (this.rightAVL() && this.rightAVL().subHeight + 1) || 0;
 
         return rightH - leftH;
     }
 
+    /**
+     * Updates the height of the subtree rooted at _this_.
+     */
     updateSubHeight(): void {
         let left: AVLNode<T> = this.leftAVL();
         let right: AVLNode<T> = this.rightAVL();
@@ -117,18 +168,27 @@ class AVLNode<T> extends BSTNode<T> {
         } else if (right != null) {
             this.subHeight = 1 + right.subHeight;
         } else {
-            this.subHeight = 1;
+            this.subHeight = 0;
         }
     }
 
+    /**
+     * @return the left child of _this_
+     */
     leftAVL(): AVLNode<T> {
         return this.left as AVLNode<T>;
     }
 
+    /**
+     * @return the parent of _this_
+     */
     parentAVL(): AVLNode<T> {
         return this.parent as AVLNode<T>;
     }
 
+    /**
+     * @return the right child of _this_
+     */
     rightAVL(): AVLNode<T> {
         return this.right as AVLNode<T>;
     }

@@ -1,11 +1,21 @@
 import { Comparator, defaultCompare } from './collection'
 import { BinarySearchTree, BSTNode } from './binary-search-tree'
 
+/**
+ * A splay tree.
+ */
 export class SplayTree<T> extends BinarySearchTree<T> {
+    /**
+     * The constructor.
+     * @param compare the function to use when comparing values in _this_
+     */
     constructor(compare: Comparator<T> = defaultCompare) {
         super(compare);
     }
 
+    /**
+     * See parent documentation.
+     */
     add(value: T): void {
         let node: BSTNode<T>;
 
@@ -19,6 +29,9 @@ export class SplayTree<T> extends BinarySearchTree<T> {
         }
     }
 
+    /**
+     * See parent documentation.
+     */
     erase(value: T): void {
         let node: BSTNode<T> = this.findNode(value);
 
@@ -33,6 +46,9 @@ export class SplayTree<T> extends BinarySearchTree<T> {
         }
     }
 
+    /**
+     * See parent documentation.
+     */
     find(value: T): boolean {
         let node: BSTNode<T> = super.findNode(value);
 
@@ -45,6 +61,9 @@ export class SplayTree<T> extends BinarySearchTree<T> {
         }
     }
 
+    /**
+     * See parent documentation.
+     */
     max(): T {
         let max: T = super.max();
 
@@ -53,6 +72,9 @@ export class SplayTree<T> extends BinarySearchTree<T> {
         return max;
     }
 
+    /**
+     * See parent documentation.
+     */
     min(): T {
         let min: T = super.min();
 
@@ -61,12 +83,20 @@ export class SplayTree<T> extends BinarySearchTree<T> {
         return min;
     }
 
+    /**
+     * Splays a given node until it is the root of _this_.
+     * @param node the node to splay
+     */
     private splay(node: BSTNode<T>): void {
         while (node.parent != null) { // while node is not root
             this.splayUp(node);
         }
     }
 
+    /**
+     * Splays a given node up using one splay operation.
+     * @param node the node to splay
+     */
     private splayUp(node: BSTNode<T>): void {
         if (node.parent != null) {
             if (node.parent.parent != null) {
@@ -84,6 +114,10 @@ export class SplayTree<T> extends BinarySearchTree<T> {
         }
     }
 
+    /**
+     * Performs a zig splay operation on the given node.
+     * @param node the node to splay
+     */
     private zig(node: BSTNode<T>): void {
         if (node == node.parent.left) {
             this.rotateRight(node.parent);
@@ -92,6 +126,10 @@ export class SplayTree<T> extends BinarySearchTree<T> {
         }
     }
 
+    /**
+     * Performs a zigzag splay operation on the given node.
+     * @param node the node to splay
+     */
     private zigzag(node: BSTNode<T>): void {
         if (node == node.parent.left) {
             this.rotateRight(node.parent);
@@ -102,6 +140,10 @@ export class SplayTree<T> extends BinarySearchTree<T> {
         }
     }
 
+    /**
+     * Performs a zigzig splay operation on the given node.
+     * @param node the node to splay
+     */
     private zigzig(node: BSTNode<T>): void {
         if (node == node.parent.left) {
             this.rotateRight(node.parent.parent);

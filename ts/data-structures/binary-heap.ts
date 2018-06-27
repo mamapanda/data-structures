@@ -1,6 +1,13 @@
 import { Collection, Comparator, defaultCompare } from './collection'
 
+/**
+ * A binary heap.
+ */
 export class BinaryHeap<T> extends Collection<T> {
+    /**
+     * The constructor.
+     * @param compare the function to use when comparing values in _this_
+     */
     constructor(compare: Comparator<T> = defaultCompare) {
         super();
 
@@ -8,6 +15,10 @@ export class BinaryHeap<T> extends Collection<T> {
         this.data = [];
     }
 
+    /**
+     * Finds the minimum value in _this_. An error is thrown if _this_ is empty.
+     * @return the minimum value
+     */
     min(): T {
         if (this.empty()) {
             throw Error();
@@ -16,6 +27,10 @@ export class BinaryHeap<T> extends Collection<T> {
         return this.data[0];
     }
 
+    /**
+     * Removes the minimum value in _this_. An error is thrown if _this_ is empty.
+     * @return the minimum value
+     */
     popMin(): T {
         if (this.empty()) {
             throw Error();
@@ -27,15 +42,24 @@ export class BinaryHeap<T> extends Collection<T> {
         return min;
     }
 
+    /**
+     * See parent documentation.
+     */
     add(value: T): void {
         this.data.push(value);
         this.heapifyUp(this.data.length - 1);
     }
 
+    /**
+     * See parent documentation.
+     */
     clear(): void {
         this.data = [];
     }
 
+    /**
+     * See parent documentation.
+     */
     erase(value: T): void {
         let i: number = this.indexOf(value);
 
@@ -50,25 +74,48 @@ export class BinaryHeap<T> extends Collection<T> {
         }
     }
 
+    /**
+     * See parent documentation.
+     */
     find(value: T): boolean {
         return this.indexOf(value) >= 0;
     }
 
+    /**
+     * See parent documentation.
+     */
     *iterator(): Iterator<T> {
         yield* this.data;
     }
 
+    /**
+     * See parent documentation.
+     */
     size(): number {
         return this.data.length;
     }
 
+    /**
+     * See parent documentation.
+     */
     toString(): string {
         return `[${this.data.toString()}]`;
     }
 
+    /**
+     * The function to use when comparing values in _this_.
+     */
     private compare: Comparator<T>;
+
+    /**
+     * An array-based heap.
+     */
     private data: T[];
 
+    /**
+     * @return the index of the given value in _this_.data,
+     * or -1 if it is not found
+     */
     private indexOf(value: T): number {
         for (let i: number = 0; i < this.data.length; ++i) {
             if (this.compare(this.data[i], value) == 0) {
@@ -79,6 +126,10 @@ export class BinaryHeap<T> extends Collection<T> {
         return -1;
     }
 
+    /**
+     * Performs a heapify down operation, starting from a given position.
+     * @param i the index of the starting position in _this_.data
+     */
     private heapifyDown(i: number): void {
         while (true) {
             let iLeft: number = indexLeft(i);
@@ -104,6 +155,10 @@ export class BinaryHeap<T> extends Collection<T> {
         }
     }
 
+    /**
+     * Performs a heapify up operation, starting from a given position.
+     * @param i the index of the starting position in _this_.data
+     */
     private heapifyUp(i: number): void {
         let iParent: number = indexParent(i);
 
@@ -116,14 +171,29 @@ export class BinaryHeap<T> extends Collection<T> {
     }
 }
 
+/**
+ * Calculates the equivalent left child index of a given index.
+ * @param index the index
+ * @return the left child index
+ */
 function indexLeft(index: number): number {
     return 2 * index + 1;
 }
 
+/**
+ * Calculates the equivalent parent index of a given index.
+ * @param index the index
+ * @return the parent index
+ */
 function indexParent(index: number): number {
     return (index & 1) == 0 ? (index - 2) / 2 : (index - 1) / 2;
 }
 
+/**
+ * Calculates the equivalent right child index of a given index.
+ * @param index the index
+ * @return the right child index
+ */
 function indexRight(index: number): number {
     return 2 * index + 2;
 }

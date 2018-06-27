@@ -1,6 +1,13 @@
 import { DisjointSet } from './disjoint-set'
 
+/**
+ * A disjoint set based on quick find.
+ */
 export class QuickFind extends DisjointSet {
+    /**
+     * the constructor.
+     * @param nVertices the number of vertices to use
+     */
     constructor(nVertices: number) {
         super();
 
@@ -11,6 +18,9 @@ export class QuickFind extends DisjointSet {
         }
     }
 
+    /**
+     * See parent documentation.
+     */
     find(vertex: number): number {
         if (vertex < 0 || vertex >= this.setIDs.length) {
             throw Error();
@@ -19,10 +29,16 @@ export class QuickFind extends DisjointSet {
         }
     }
 
+    /**
+     * See parent documentation.
+     */
     size(): number {
         return this.setIDs.length;
     }
 
+    /**
+     * See parent documentation.
+     */
     union(u: number, v: number): void {
         let uID: number = this.find(u);
         let vID: number = this.find(v);
@@ -34,5 +50,8 @@ export class QuickFind extends DisjointSet {
         }
     }
 
+    /**
+     * An array such that array[vertex] gives the set ID of the vertex.
+     */
     private setIDs: Array<number>;
 }

@@ -1,6 +1,13 @@
 import { Indexable, Comparator, defaultCompare } from './collection';
 
+/**
+ * A skip list.
+ */
 export class SkipList<T> extends Indexable<T> {
+    /**
+     * The constructor.
+     * @param compare the function to use when comparing two values in _this_
+     */
     constructor(compare: Comparator<T> = defaultCompare) {
         super();
 
@@ -8,6 +15,9 @@ export class SkipList<T> extends Indexable<T> {
         this.head = new SLNode<T>(null, [null]);
     }
 
+    /**
+     * See parent documentation.
+     */
     add(value: T): void {
         let level: number = randomLevel(0.5);
         let node: SLNode<T> = new SLNode<T>(value, new Array(level + 1));
@@ -30,14 +40,23 @@ export class SkipList<T> extends Indexable<T> {
         }
     }
 
+    /**
+     * See parent documentation.
+     */
     at(index: number): T {
         return this.nodeAt(index).value;
     }
 
+    /**
+     * See parent documentation.
+     */
     clear(): void {
         this.head.next = [null];
     }
 
+    /**
+     * See parent documentation.
+     */
     erase(value: T): void {
         this.previousOf(value).forEach((previous: SLNode<T>, i: number) => {
             let level: number = i;
@@ -49,6 +68,9 @@ export class SkipList<T> extends Indexable<T> {
         });
     }
 
+    /**
+     * See parent documentation.
+     */
     eraseAt(index: number): void {
         let node: SLNode<T> = this.nodeAt(index);
 
@@ -61,6 +83,9 @@ export class SkipList<T> extends Indexable<T> {
         });
     }
 
+    /**
+     * See parent documentation.
+     */
     find(value: T): boolean {
         let previous: SLNode<T> = this.previousOf(value)[0];
         let node: SLNode<T> = previous.next[0];
@@ -68,6 +93,9 @@ export class SkipList<T> extends Indexable<T> {
         return node != null && this.compare(node.value, value) == 0;
     }
 
+    /**
+     * See parent documentation.
+     */
     *iterator(): Iterator<T> {
         let node: SLNode<T> = this.head.next[0];
 
@@ -78,6 +106,9 @@ export class SkipList<T> extends Indexable<T> {
         }
     }
 
+    /**
+     * See parent documentation.
+     */
     size(): number {
         let size: number = 0;
 
@@ -88,15 +119,31 @@ export class SkipList<T> extends Indexable<T> {
         return size;
     }
 
+    /**
+     * See parent documentation.
+     */
     toString(): string {
         return `[${this.toArray().toString()}]`;
     }
 
+    /**
+     * The function to use when comparing two values.
+     */
     private compare: Comparator<T>;
-    private head: SLNode<T>; // null head
 
+    /**
+     * The null head node of _this_.
+     */
+    private head: SLNode<T>;
+
+    /**
+     * Finds the node at the given index. An error is thrown
+     * if the index is out of bounds.
+     * @param index the index
+     * @return the node at the given index
+     */
     private nodeAt(index: number): SLNode<T> {
-        if (index < 0 || index >= this.size()) {
+        if (index < 0) {
             throw Error();
         }
 
@@ -105,13 +152,22 @@ export class SkipList<T> extends Indexable<T> {
         // technically, this.head's index is -1
         for (let i: number = -1; i != index; ++i) {
             node = node.next[0];
+
+            if (node == null) { // hit end of list before reaching index
+                throw Error();
+            }
         }
 
         return node;
     }
 
-    // Returns a list of nodes, where list[i] is the last node in level i
-    // with node.value < value. If the level is empty, list[i] is this.head.
+    /**
+     * For each level, find the last node such that the node's value is less
+     * than the given value.
+     * @param value the value
+     * @return a list of the nodes, such that list[i] is the relevant node
+     * in the ith level, or _this_.head if there is no such node.
+     */
     private previousOf(value: T): SLNode<T>[] {
         let previousList: SLNode<T>[] = new Array(this.head.level() + 1);
         let previous: SLNode<T> = this.head;
@@ -131,20 +187,45 @@ export class SkipList<T> extends Indexable<T> {
     }
 }
 
+/**
+ * A skip list node.
+ */
 class SLNode<T> {
+    /**
+     * A list of successor nodes, such that next[i] gives the
+     * successor of _this_ at the ith level of the list.
+     */
     next: SLNode<T>[];
+
+    /**
+     * The value contained in _this_.
+     */
     value: T;
 
+    /**
+     * The constructor.
+     * @param value the value to store in _this_
+     * @param next the successors of _this_
+     */
     constructor(value: T, next: SLNode<T>[]) {
         this.next = next;
         this.value = value;
     }
 
+    /**
+     * @return the highest level that _this_ reaches
+     */
     level(): number {
         return this.next.length - 1;
     }
 }
 
+/**
+ * Calculates a random maximum level using Math.random
+ * and the given level promotion probability.
+ * @param probability the level promotion probability
+ * @return a random maximum level
+ */
 function randomLevel(probability: number): number {
     if (probability < 0 || probability >= 1) {
         throw Error();
