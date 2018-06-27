@@ -14,12 +14,19 @@ export class SkipList<T> extends Indexable<T> {
 
         let previousList: SLNode<T>[] = this.previousOf(value);
 
-        for (let i: number = 0; i <= level; ++i) {
+        // nodes with level <= this.head.level()
+        for (let i: number = 0; i <= Math.min(level, this.head.level()); ++i) {
             let previous: SLNode<T> = previousList[i];
             let next: SLNode<T> = previous.next[i];
 
             previous.next[i] = node;
             node.next[i] = next;
+        }
+
+        // nodes with level > this.head.level()
+        for (let i: number = this.head.level() + 1; i <= level; ++i) {
+            this.head.next.push(node);
+            node.next[i] = null;
         }
     }
 

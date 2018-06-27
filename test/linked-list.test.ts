@@ -327,7 +327,7 @@ describe('Linked List Test', () => {
 
             xs.forEach(x => list.add(x));
 
-            list.erase(3);
+            list.erase(xs[0]);
 
             expect(list.toArray()).to.be.deep.equal(xs.splice(1, xs.length));
         })
@@ -337,7 +337,7 @@ describe('Linked List Test', () => {
 
             xs.forEach(x => list.add(x));
 
-            list.eraseAt(4);
+            list.erase(xs[4]);
             xs.splice(4, 1);
 
             expect(list.toArray()).to.be.deep.equal(xs);
@@ -348,7 +348,7 @@ describe('Linked List Test', () => {
 
             xs.forEach(x => list.add(x));
 
-            list.eraseAt(xs.length - 1);
+            list.erase(xs[xs.length - 1]);
             xs.splice(xs.length - 1, 1);
 
             expect(list.toArray()).to.be.deep.equal(xs);
