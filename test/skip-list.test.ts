@@ -96,6 +96,21 @@ describe('Skip List Test', () => {
         testClear('Single Element', [1]);
         testClear('Multiple Elements', [3, 2, 5, 1, 29, 0, 9, 9, 9]);
     });
+    describe('SkipList::empty', () => {
+        function testEmpty(testName: string, xs: number[]): void {
+            it(testName, () => {
+                let list: SkipList<number> = new SkipList<number>();
+
+                xs.forEach(x => list.add(x));
+
+                expect(list.empty()).to.be.eq(xs.length == 0);
+            });
+        }
+
+        testEmpty('Empty List', []);
+        testEmpty('Single-Element List', [0]);
+        testEmpty('Multiple-Element List', [3, 2, 15, 10, 0, 4]);
+    });
     describe('SkipList::erase', () => {
         function testErase(testName: string, xs: number[], index: number): void {
             it(testName, () => {

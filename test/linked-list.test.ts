@@ -305,6 +305,21 @@ describe('Linked List Test', () => {
             expect(list.size()).to.be.eq(0);
         })
     })
+    describe('LinkedList::empty', () => {
+        function testEmpty(testName: string, xs: number[]): void {
+            it(testName, () => {
+                let list: LinkedList<number> = new LinkedList<number>();
+
+                xs.forEach(x => list.add(x));
+
+                expect(list.empty()).to.be.eq(xs.length == 0);
+            });
+        }
+
+        testEmpty('Empty List', []);
+        testEmpty('Single-Element List', [0]);
+        testEmpty('Multiple-Element List', [3, 2, 15, 10, 0, 4]);
+    });
     describe('LinkedList::erase', () => {
         it('Empty List', () => {
             let list: LinkedList<number> = new LinkedList<number>();

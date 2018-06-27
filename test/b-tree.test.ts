@@ -144,6 +144,25 @@ describe('B-Tree Test', () => {
             })
         });
     });
+    describe('BTree::empty', () => {
+        it('Empty Tree', () => {
+            let tree: BTree<number> = new BTree<number>(2);
+
+            expect(tree.empty()).to.be.eq(true);
+        });
+        it('Single-Element Tree', () => {
+            let tree: BTree<number> = new BTree<number>(2);
+
+            tree.add(3);
+
+            expect(tree.empty()).to.be.eq(false);
+        });
+        it('Multiple-Element Tree', () => {
+            withTree(tree => {
+                expect(tree.empty()).to.be.eq(false);
+            });
+        });
+    });
     describe('BTree::erase', () => {
         it('Empty Tree', () => {
             let tree: BTree<number> = new BTree<number>(2);

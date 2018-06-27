@@ -176,6 +176,21 @@ describe('Binary Heap Test', () => {
             expect(heap.size()).to.be.eq(0);
         })
     })
+    describe('BinaryHeap::empty', () => {
+        function testEmpty(testName: string, xs: number[]): void {
+            it(testName, () => {
+                let heap: BinaryHeap<number> = new BinaryHeap<number>();
+
+                xs.forEach(x => heap.add(x));
+
+                expect(heap.empty()).to.be.eq(xs.length == 0);
+            });
+        }
+
+        testEmpty('Empty Heap', []);
+        testEmpty('Single-Element Heap', [4]);
+        testEmpty('Multiple-Element Heap', [1, 2, 5, 3, 4]);
+    });
     describe('BinaryHeap::erase', () => {
         it('Empty Heap', () => {
             let heap: BinaryHeap<number> = new BinaryHeap<number>();

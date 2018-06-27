@@ -94,6 +94,21 @@ describe('Hash Table Test', () => {
             expect(table.empty()).to.be.eq(true);
         });
     });
+    describe('HashTable::empty', () => {
+        function testEmpty(testName: string, xs: number[]): void {
+            it(testName, () => {
+                let table: HashTable<number> = new HashTable<number>(modHash(5));
+
+                xs.forEach(x => table.add(x));
+
+                expect(table.empty()).to.be.eq(xs.length == 0);
+            });
+        }
+
+        testEmpty('Empty Table', []);
+        testEmpty('Single-Element Table', [0]);
+        testEmpty('Multiple-Element Table', [3, 2, 15, 10, 0, 4])
+    });
     describe('HashTable::erase', () => {
         it('Empty Table', () => {
             let table: HashTable<number> = new HashTable<number>(modHash(5));

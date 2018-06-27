@@ -169,6 +169,21 @@ describe('Binary Search Tree Test', () => {
             expect(tree.size()).to.be.eq(0);
         })
     })
+    describe('BinarySearchTree::empty', () => {
+        function testEmpty(testName: string, xs: number[]): void {
+            it(testName, () => {
+                let tree: BinarySearchTree<number> = new BinarySearchTree<number>();
+
+                xs.forEach(x => tree.add(x));
+
+                expect(tree.empty()).to.be.eq(xs.length == 0);
+            });
+        }
+
+        testEmpty('Empty Tree', []);
+        testEmpty('Single-Element Tree', [0]);
+        testEmpty('Multiple-Element Tree', [-4, 3, 2, 15, -99, 10, 0, 4])
+    });
     describe('BinarySearchTree::erase', () => {
         it('Empty Tree', () => {
             let tree: BinarySearchTree<number> = new BinarySearchTree<number>();
