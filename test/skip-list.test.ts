@@ -1,6 +1,5 @@
 import { expect } from 'chai';
-import { Comparator, defaultCompare } from '../ts/collection';
-import { SkipList } from '../ts/skip-list';
+import { SkipList, Comparator, defaultCompare } from '../ts/data-structures';
 
 // provide a seeded Math.random for consistent testing
 let originalRandom = Math.random;

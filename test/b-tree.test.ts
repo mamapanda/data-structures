@@ -1,6 +1,5 @@
 import { expect } from 'chai';
-import { Collection, Comparator, defaultCompare } from '../ts/collection';
-import { BTree } from '../ts/b-tree';
+import { BTree, Comparator, defaultCompare } from '../ts/data-structures';
 
 function withTree(f: (tree: BTree<number>) => void) {
     let tree: BTree<number> = new BTree<number>(2);

@@ -11,4 +11,5 @@ My implementations of data structures in TypeScript.
 * Linked List
 * Quick Find
 * Quick Union
+* Skip List
 * Splay Tree

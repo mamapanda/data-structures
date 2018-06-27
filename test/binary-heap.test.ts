@@ -1,6 +1,5 @@
 import { expect } from 'chai';
-import { Comparator, defaultCompare } from '../ts/collection';
-import { BinaryHeap } from '../ts/binary-heap';
+import { BinaryHeap, Comparator, defaultCompare } from '../ts/data-structures';
 
 describe('Binary Heap Test', () => {
     describe('default constructor', () => {

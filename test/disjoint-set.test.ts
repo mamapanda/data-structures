@@ -1,7 +1,5 @@
 import { expect } from 'chai';
-import { DisjointSet } from '../ts/disjoint-set';
-import { QuickFind } from '../ts/quick-find';
-import { QuickUnion } from '../ts/quick-union';
+import { DisjointSet, QuickFind, QuickUnion } from '../ts/data-structures';
 
 function testDisjointSet(ctor: new (n: number) => DisjointSet) {
     it('Empty Set', () => {

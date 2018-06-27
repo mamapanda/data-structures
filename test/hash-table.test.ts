@@ -1,5 +1,9 @@
 import { expect } from 'chai';
-import { HashTable, modHash } from '../ts/hash-table';
+import { HashTable } from '../ts/data-structures';
+
+function modHash(divisor: number, multiplier: number = 1) {
+    return (x: number) => (multiplier * x) % divisor;
+}
 
 describe('Hash Table Test', () => {
     describe('constructor', () => {

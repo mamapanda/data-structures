@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { LinkedList } from '../ts/linked-list';
+import { LinkedList } from '../ts/data-structures';
 
 describe('Linked List Test', () => {
     describe('default constructor', () => {

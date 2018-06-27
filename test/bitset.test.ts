@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { BitSet } from '../ts/bitset';
+import { BitSet } from '../ts/data-structures';
 
 describe('Bit Set Test', () => {
     describe('constructor', () => {

@@ -1,6 +1,5 @@
 import { expect } from 'chai';
-import { Comparator, defaultCompare } from '../ts/collection';
-import { BinarySearchTree } from '../ts/binary-search-tree';
+import { BinarySearchTree, Comparator, defaultCompare } from '../ts/data-structures';
 
 describe('Binary Search Tree Test', () => {
     describe('default constructor', () => {

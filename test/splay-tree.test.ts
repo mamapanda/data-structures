@@ -1,6 +1,5 @@
 import { expect } from 'chai';
-import { Comparator, defaultCompare } from '../ts/collection';
-import { SplayTree } from '../ts/splay-tree';
+import { SplayTree, Comparator, defaultCompare } from '../ts/data-structures';
 
 describe('Splay Tree Test', () => {
     describe('default constructor', () => {

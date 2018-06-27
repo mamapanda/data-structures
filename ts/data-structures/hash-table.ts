@@ -81,7 +81,3 @@ export class HashTable<T> extends Collection<T> {
         return -1;
     }
 }
-
-export function modHash(divisor: number, multiplier: number = 1) {
-    return (x: number) => (multiplier * x) % divisor;
-}
