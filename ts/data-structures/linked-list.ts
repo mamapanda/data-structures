@@ -165,6 +165,13 @@ export class LinkedList<T> extends List<T> {
     /**
      * See parent documentation.
      */
+    empty(): boolean {
+        return this.head == null && this.last == null;
+    }
+
+    /**
+     * See parent documentation.
+     */
     erase(value: T): void {
         let i: number = 0;
 
@@ -187,7 +194,10 @@ export class LinkedList<T> extends List<T> {
         let previous: LLNode<T> = node.previous;
         let next: LLNode<T> = node.next;
 
-        if (node == this.head) { // node.previous == null
+        if (node == this.head && node == this.last) { // single-element list
+            this.head = null;
+            this.last = null;
+        } else if (node == this.head) { // node.previous == null
             if (next != null) {
                 unlink(node, next);
             }

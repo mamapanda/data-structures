@@ -14,6 +14,11 @@ export abstract class Collection<T> {
     abstract clear(): void;
 
     /**
+     * @return whether _this_ contains no values
+     */
+    abstract empty(): boolean;
+
+    /**
      * Erases the given value from _this_.
      * Nothing is done if _this_ does not contain the value.
      * @param value the value to erase
@@ -41,13 +46,6 @@ export abstract class Collection<T> {
      * @return the string representation of _this_
      */
     abstract toString(): string;
-
-    /**
-     * @return whether _this_ contains no values
-     */
-    empty(): boolean {
-        return this.size() == 0;
-    }
 
     /**
      * Converts _this_ into an array.

@@ -57,6 +57,13 @@ export class SkipList<T> extends Indexable<T> {
     /**
      * See parent documentation.
      */
+    empty(): boolean {
+        return this.head.next.every(x => x == null);
+    }
+
+    /**
+     * See parent documentation.
+     */
     erase(value: T): void {
         this.previousOf(value).forEach((previous: SLNode<T>, i: number) => {
             let level: number = i;

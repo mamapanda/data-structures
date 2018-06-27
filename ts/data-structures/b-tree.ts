@@ -91,6 +91,13 @@ export class BTree<T> extends Collection<T> {
     /**
      * See parent documentation.
      */
+    empty(): boolean {
+        return this.root.values.length == 0;
+    }
+
+    /**
+     * See parent documentation.
+     */
     erase(value: T): void {
         let node: BNode<T>;
         let i: number;

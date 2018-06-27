@@ -60,6 +60,13 @@ export class BinaryHeap<T> extends Collection<T> {
     /**
      * See parent documentation.
      */
+    empty(): boolean {
+        return this.data.length == 0;
+    }
+
+    /**
+     * See parent documentation.
+     */
     erase(value: T): void {
         let i: number = this.indexOf(value);
 

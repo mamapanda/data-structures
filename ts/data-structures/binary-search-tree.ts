@@ -56,6 +56,13 @@ export class BinarySearchTree<T> extends Collection<T> {
     /**
      * See parent documentation.
      */
+    empty(): boolean {
+        return this.root == null;
+    }
+
+    /**
+     * See parent documentation.
+     */
     erase(value: T): void {
         let node: BSTNode<T> = this.findNode(value);
 

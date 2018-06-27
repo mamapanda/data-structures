@@ -44,6 +44,13 @@ export class HashTable<T> extends Collection<T> {
     /**
      * See parent documentation.
      */
+    empty(): boolean {
+        return this.data.every(x => x == undefined); // null == undefined
+    }
+
+    /**
+     * See parent documentation.
+     */
     erase(value: T): void {
         let i: number = this.indexOf(value);
 

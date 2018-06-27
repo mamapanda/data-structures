@@ -25,5 +25,4 @@ $ npm run typedoc
 * Splay Tree
 
 ### TODO
-Change Collection::empty to an abstract method to allow for O(1) performance.
-Change linked list to be singly-linked.
+* Add Collection::empty implementation tests.
