@@ -10,8 +10,8 @@ describe('Hash Table Test', () => {
         it('constructor', () => {
             let table: HashTable<number> = new HashTable<number>(modHash(5));
 
-            expect(table.toArray()).to.be.deep.equal([]);
             expect(table.size()).to.be.eq(0);
+            expect(table.toString()).to.be.eq('[,,,,,,,,,]');
         });
     });
     describe('HashTable::add', () => {
@@ -21,7 +21,7 @@ describe('Hash Table Test', () => {
             table.add(5);
 
             expect(table.size()).to.be.eq(1);
-            expect(table.toString()).to.be.eq('[5]');
+            expect(table.toString()).to.be.eq('[5,,,,,,,,,]');
         });
         it('Same Input Repeatedly', () => {
             let table: HashTable<number> = new HashTable<number>(modHash(5));
@@ -31,7 +31,7 @@ describe('Hash Table Test', () => {
             }
 
             expect(table.size()).to.be.eq(1);
-            expect(table.toString()).to.be.eq('[,,,3]');
+            expect(table.toString()).to.be.eq('[,,,3,,,,,,]');
         });
         it('Multiple Inputs', () => {
             let table: HashTable<number> = new HashTable<number>(modHash(10));
@@ -39,7 +39,7 @@ describe('Hash Table Test', () => {
             [14, 31, 26, 5, 3, 7, 5, 1, 34, 10, 31].forEach(x => table.add(x));
 
             expect(table.size()).to.be.eq(9);
-            expect(table.toString()).to.be.eq('[10,31,1,3,14,5,26,7,34]');
+            expect(table.toString()).to.be.eq('[10,31,1,3,14,5,26,7,34,]');
         });
         it('Multiple Inputs', () => {
             let table: HashTable<number> = new HashTable<number>(modHash(10));
@@ -50,7 +50,7 @@ describe('Hash Table Test', () => {
             table.add(34);
 
             expect(table.size()).to.be.eq(8);
-            expect(table.toString()).to.be.eq('[10,31,1,3,14,34,26,7]');
+            expect(table.toString()).to.be.eq('[10,31,1,3,14,34,26,7,,]');
         });
         it('Multiple Inputs', () => {
             let table: HashTable<number> = new HashTable<number>(modHash(10));
@@ -59,6 +59,16 @@ describe('Hash Table Test', () => {
             for (let i: number = 0; i < 1000; ++i) {
                 table.add(i);
                 xs.push(i);
+            }
+
+            let internalSize: number = 10;
+
+            while (internalSize < xs.length) {
+                internalSize *= 2;
+            }
+
+            while (xs.length < internalSize) {
+                xs.push(undefined);
             }
 
             expect(table.toString()).to.be.eq(`[${xs.toString()}]`);
@@ -72,6 +82,7 @@ describe('Hash Table Test', () => {
             table.clear();
 
             expect(table.empty()).to.be.eq(true);
+            expect(table.toString()).to.be.eq('[,,,,,,,,,]');
         });
         it('Single Element', () => {
             let table: HashTable<number> = new HashTable<number>(modHash(5));
@@ -81,6 +92,7 @@ describe('Hash Table Test', () => {
             table.clear();
 
             expect(table.empty()).to.be.eq(true);
+            expect(table.toString()).to.be.eq('[,,,,,,,,,]');
         });
         it('Multiple Elements', () => {
             let table: HashTable<number> = new HashTable<number>(modHash(5));
@@ -92,6 +104,7 @@ describe('Hash Table Test', () => {
             table.clear();
 
             expect(table.empty()).to.be.eq(true);
+            expect(table.toString()).to.be.eq('[,,,,,,,,,]');
         });
     });
     describe('HashTable::empty', () => {
@@ -116,6 +129,7 @@ describe('Hash Table Test', () => {
             table.erase(10);
 
             expect(table.empty()).to.be.eq(true);
+            expect(table.toString()).to.be.eq('[,,,,,,,,,]');
         });
         it('Single Element', () => {
             let table: HashTable<number> = new HashTable<number>(modHash(5));
@@ -124,6 +138,7 @@ describe('Hash Table Test', () => {
             table.erase(4);
 
             expect(table.empty()).to.be.eq(true);
+            expect(table.toString()).to.be.eq('[,,,,,,,,,]');
         });
         it('Multiple Elements', () => {
             let table: HashTable<number> = new HashTable<number>(modHash(10));
@@ -133,7 +148,7 @@ describe('Hash Table Test', () => {
 
             expect(table.size()).to.be.eq(8);
 
-            expect(table.toString()).to.be.eq('[,31,1,3,14,5,26,7,34]');
+            expect(table.toString()).to.be.eq('[,31,1,3,14,5,26,7,34,]');
         });
         it('Multiple Elements', () => {
             let table: HashTable<number> = new HashTable<number>(modHash(10));
@@ -143,7 +158,7 @@ describe('Hash Table Test', () => {
 
             expect(table.size()).to.be.eq(8);
 
-            expect(table.toString()).to.be.eq('[10,31,1,3,14,5,26,7,]');
+            expect(table.toString()).to.be.eq('[10,31,1,3,14,5,26,7,,]');
         });
         it('Multiple Elements', () => {
             let table: HashTable<number> = new HashTable<number>(modHash(10));
@@ -164,7 +179,7 @@ describe('Hash Table Test', () => {
 
             expect(table.size()).to.be.eq(9);
 
-            expect(table.toString()).to.be.eq('[10,31,1,3,14,5,26,7,34]');
+            expect(table.toString()).to.be.eq('[10,31,1,3,14,5,26,7,34,]');
         });
     });
     describe('HashTable::find', () => {
@@ -263,21 +278,21 @@ describe('Hash Table Test', () => {
         it('Empty Table', () => {
             let table: HashTable<number> = new HashTable<number>(modHash(5));
 
-            expect(table.toString()).to.be.eq('[]');
+            expect(table.toString()).to.be.eq('[,,,,,,,,,]');
         });
         it('Single Element', () => {
             let table: HashTable<number> = new HashTable<number>(modHash(5));
 
             table.add(4);
 
-            expect(table.toString()).to.be.eq('[,,,,4]');
+            expect(table.toString()).to.be.eq('[,,,,4,,,,,]');
         });
         it('Multiple Elements', () => {
             let table: HashTable<number> = new HashTable<number>(modHash(10));
 
             [14, 31, 26, 5, 3, 7, 1, 34, 10].forEach(x => table.add(x));
 
-            expect(table.toString()).to.be.eq('[10,31,1,3,14,5,26,7,34]');
+            expect(table.toString()).to.be.eq('[10,31,1,3,14,5,26,7,34,]');
         });
         it('Multiple Elements', () => {
             let table: HashTable<number> = new HashTable<number>(modHash(10));
@@ -285,7 +300,7 @@ describe('Hash Table Test', () => {
             [14, 31, 26, 5, 3, 7, 1, 34].forEach(x => table.add(x));
             table.erase(26);
 
-            expect(table.toString()).to.be.eq('[,31,1,3,14,5,,7,34]');
+            expect(table.toString()).to.be.eq('[,31,1,3,14,5,,7,34,]');
         });
     });
 });

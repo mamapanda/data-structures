@@ -12,7 +12,7 @@ export class HashTable<T> extends Collection<T> {
     constructor(hash: (value: T) => number, equal: Equality<T> = defaultEquality) {
         super();
 
-        this.data = [];
+        this.resetData();
         this.equal = equal;
         this.hash = hash;
     }
@@ -21,15 +21,18 @@ export class HashTable<T> extends Collection<T> {
      * See parent documentation.
      */
     add(value: T): void {
-        let i: number = this.hash(value);
+        let i: number;
 
-        while (this.data[i] != undefined) { // undefined == null
+        for (i = this.hash(value); i < this.data.length; ++i) {
             if (this.equal(this.data[i], value)) {
                 return;
+            } else if (this.data[i] == undefined) { // undefined == null
+                this.data[i] = value;
+                return;
             }
-
-            ++i;
         }
+
+        this.resize(i + 1);
 
         this.data[i] = value;
     }
@@ -38,7 +41,7 @@ export class HashTable<T> extends Collection<T> {
      * See parent documentation.
      */
     clear(): void {
-        this.data = [];
+        this.resetData();
     }
 
     /**
@@ -134,5 +137,25 @@ export class HashTable<T> extends Collection<T> {
         }
 
         return -1;
+    }
+
+    /**
+     * Resets _this_.data to an array of 10 undefined elements.
+     */
+    private resetData(): void {
+        this.data = Array.apply(null, Array(10)); // dense instead of sparse
+    }
+
+    /**
+     * Doubles the size of _this_.data until it is greater than or equal
+     * to minSize.
+     * @param minSize the minimum size for _this_.data
+     */
+    private resize(minSize: number): void {
+        while (this.data.length < minSize) {
+            let newSlots: T[] = Array.apply(null, Array(this.data.length));
+
+            this.data = this.data.concat(newSlots);
+        }
     }
 }
