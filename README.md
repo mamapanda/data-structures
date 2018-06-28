@@ -3,6 +3,11 @@ My implementations of data structures in TypeScript.
 Source files are inside the ts/ folder, while test files are inside
 the test/ folder.  
 <br/>
+To compile, use
+```console
+$ npm run tsc
+```
+
 To run tests, use 
 ```console
 $ npm run test

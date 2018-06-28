@@ -1,14 +1,14 @@
 {
     "compilerOptions": {
-        "module": "None", // es6 fails with npm run test
         "target": "es6",
         "noImplicitAny": false,
         "sourceMap": false,
-        "outDir": "build"
+        "outDir": "build",
+        "removeComments": true
     },
 
     "include": [
-        "./ts/data-structures/",
-        "./ts/"
+        "./ts/",
+        "./ts/data-structures/"
     ]
 }
