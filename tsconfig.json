@@ -6,7 +6,15 @@
         "outDir": "build",
         "removeComments": true
     },
-
+    "typedocOptions": {
+        "excludeNotExported": true,
+        "excludePrivate": true,
+        "excludeProtected": true,
+        "mode": "file",
+        "readme": "none",
+        "out": "doc/",
+        "target": "ES6"
+    },
     "include": [
         "./ts/",
         "./ts/data-structures/"

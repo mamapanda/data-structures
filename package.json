@@ -14,9 +14,9 @@
         "typescript": "^2.8.3"
     },
     "scripts": {
-        "test": "mocha -r ts-node/register ./test/*.test.ts",
+        "test": "mocha ./test/*.test.ts -r ts-node/register -R min",
         "tsc": "tsc",
-        "typedoc": "typedoc ts/ --out doc/ --mode file --target ES6 --excludePrivate --excludeProtected --excludeNotExported --readme none"
+        "typedoc": "typedoc ts/"
     },
     "repository": {
         "type": "git",
