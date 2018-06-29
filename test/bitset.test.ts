@@ -151,6 +151,13 @@ describe('Bit Set Test', () => {
         it('Mixed BitSet', () => {
             let bitset: BitSet = new BitSet(64);
 
+            bitset.flip(0);
+
+            expect(bitset.none()).to.be.eq(false);
+        });
+        it('Mixed BitSet', () => {
+            let bitset: BitSet = new BitSet(64);
+
             for (let i: number = 32; i < bitset.size; ++i) {
                 bitset.update(i, true);
             }
@@ -233,6 +240,13 @@ describe('Bit Set Test', () => {
             let bitset: BitSet = new BitSet(64);
 
             expect(bitset.some()).to.be.eq(false);
+        });
+        it('Mixed BitSet', () => {
+            let bitset: BitSet = new BitSet(64);
+
+            bitset.flip(0);
+
+            expect(bitset.some()).to.be.eq(true);
         });
         it('Mixed BitSet', () => {
             let bitset: BitSet = new BitSet(64);
