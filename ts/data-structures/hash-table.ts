@@ -24,10 +24,12 @@ export class HashTable<T> extends Collection<T> {
         let i: number;
 
         for (i = this.hash(value); i < this.data.length; ++i) {
-            if (this.equal(this.data[i], value)) {
-                return;
-            } else if (this.data[i] == undefined) { // undefined == null
+            let x: T | null | undefined = this.data[i];
+
+            if (x == undefined) { // undefined == null
                 this.data[i] = value;
+                return;
+            } else if (this.equal(x, value)) {
                 return;
             }
         }
@@ -108,17 +110,17 @@ export class HashTable<T> extends Collection<T> {
      * and deleted later. If the value is undefined, then no value was ever
      * inserted into the slot.
      */
-    private data: T[];
+    private data: (T | null | undefined)[];
 
     /**
      * The function to use when checking if two values are equal.
      */
-    private equal: Equality<T>;
+    private readonly equal: Equality<T>;
 
     /**
      * The hash function to use.
      */
-    private hash: (value: T) => number;
+    private readonly hash: (value: T) => number;
 
     /**
      * Calculates the index of the given value inside _this_.data.
@@ -126,14 +128,14 @@ export class HashTable<T> extends Collection<T> {
      * @return the index, or -1 if the value is not found
      */
     private indexOf(value: T): number {
-        let i: number = this.hash(value);
+        for (let i: number = this.hash(value); i < this.data.length; ++i) {
+            let x: T | null | undefined = this.data[i];
 
-        while (i < this.data.length && this.data[i] !== undefined) {
-            if (this.equal(this.data[i], value)) {
+            if (x === undefined) {
+                break;
+            } else if (x != null && this.equal(x, value)) {
                 return i;
             }
-
-            ++i;
         }
 
         return -1;

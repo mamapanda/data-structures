@@ -12,7 +12,7 @@ export class SkipList<T> extends Indexable<T> {
         super();
 
         this.compare = compare;
-        this.head = new SLNode<T>(null, [null]);
+        this.head = SLNode.nullHead();
     }
 
     /**
@@ -20,14 +20,14 @@ export class SkipList<T> extends Indexable<T> {
      */
     add(value: T): void {
         let level: number = randomLevel(0.5);
-        let node: SLNode<T> = new SLNode<T>(value, new Array(level + 1));
+        let node: SLNode<T> = SLNode.with(value, new Array(level + 1));
 
         let previousList: SLNode<T>[] = this.previousOf(value);
 
         // nodes with level <= this.head.level()
         for (let i: number = 0; i <= Math.min(level, this.head.level()); ++i) {
             let previous: SLNode<T> = previousList[i];
-            let next: SLNode<T> = previous.next[i];
+            let next: SLNode<T> | null = previous.next[i];
 
             previous.next[i] = node;
             node.next[i] = next;
@@ -44,14 +44,14 @@ export class SkipList<T> extends Indexable<T> {
      * See parent documentation.
      */
     at(index: number): T {
-        return this.nodeAt(index).value;
+        return this.nodeAt(index).value!;
     }
 
     /**
      * See parent documentation.
      */
     clear(): void {
-        this.head.next = [null];
+        this.head = SLNode.nullHead();
     }
 
     /**
@@ -67,9 +67,9 @@ export class SkipList<T> extends Indexable<T> {
     erase(value: T): void {
         this.previousOf(value).forEach((previous: SLNode<T>, i: number) => {
             let level: number = i;
-            let current: SLNode<T> = previous.next[level];
+            let current: SLNode<T> | null = previous.next[level];
 
-            if (current != null && this.compare(value, current.value) == 0) {
+            if (current != null && this.compare(value, current.value!) == 0) {
                 previous.next[level] = current.next[level];
             }
         });
@@ -81,7 +81,7 @@ export class SkipList<T> extends Indexable<T> {
     eraseAt(index: number): void {
         let node: SLNode<T> = this.nodeAt(index);
 
-        this.previousOf(node.value).forEach((previous: SLNode<T>, i: number) => {
+        this.previousOf(node.value!).forEach((previous: SLNode<T>, i: number) => {
             let level: number = i;
 
             if (previous.next[level] == node) {
@@ -95,19 +95,19 @@ export class SkipList<T> extends Indexable<T> {
      */
     find(value: T): boolean {
         let previous: SLNode<T> = this.previousOf(value)[0];
-        let node: SLNode<T> = previous.next[0];
+        let node: SLNode<T> | null = previous.next[0];
 
-        return node != null && this.compare(node.value, value) == 0;
+        return node != null && this.compare(node.value!, value) == 0;
     }
 
     /**
      * See parent documentation.
      */
     *iterator(): Iterator<T> {
-        let node: SLNode<T> = this.head.next[0];
+        let node: SLNode<T> | null = this.head.next[0];
 
         while (node != null) {
-            yield node.value;
+            yield node.value!; // not head means value is defined
 
             node = node.next[0];
         }
@@ -154,7 +154,7 @@ export class SkipList<T> extends Indexable<T> {
             throw Error();
         }
 
-        let node: SLNode<T> = this.head;
+        let node: SLNode<T> | null = this.head;
 
         // technically, this.head's index is -1
         for (let i: number = -1; i != index; ++i) {
@@ -180,9 +180,9 @@ export class SkipList<T> extends Indexable<T> {
         let previous: SLNode<T> = this.head;
 
         for (let level: number = this.head.level(); level >= 0; --level) {
-            let current: SLNode<T> = previous.next[level];
+            let current: SLNode<T> | null = previous.next[level]!;
 
-            while (current != null && this.compare(current.value, value) < 0) {
+            while (current != null && this.compare(current.value!, value) < 0) {
                 previous = current;
                 current = current.next[level];
             }
@@ -202,28 +202,47 @@ class SLNode<T> {
      * A list of successor nodes, such that next[i] gives the
      * successor of _this_ at the ith level of the list.
      */
-    next: SLNode<T>[];
+    next: (SLNode<T> | null)[];
 
     /**
      * The value contained in _this_.
+     * It is undefined if _this_ is the null head node.
      */
-    value: T;
-
-    /**
-     * The constructor.
-     * @param value the value to store in _this_
-     * @param next the successors of _this_
-     */
-    constructor(value: T, next: SLNode<T>[]) {
-        this.next = next;
-        this.value = value;
-    }
+    value: T | undefined;
 
     /**
      * @return the highest level that _this_ reaches
      */
     level(): number {
         return this.next.length - 1;
+    }
+
+    /**
+     * Creates a new null head node.
+     * @return the null head node
+     */
+    static nullHead<T>(): SLNode<T> {
+        return new SLNode<T>(undefined, [null]);
+    }
+
+    /**
+     * Creates a new SLNode with the given value and successors.
+     * @param value the value
+     * @param next the successors
+     * @return a new SLNode
+     */
+    static with<T>(value: T, next: (SLNode<T> | null)[]): SLNode<T> {
+        return new SLNode<T>(value, next);
+    }
+
+    /**
+     * The constructor. Use nullHead and with instead of the constructor.
+     * @param value the value to store in _this_
+     * @param next the successors of _this_
+     */
+    private constructor(value: T | undefined, next: (SLNode<T> | null)[]) {
+        this.next = next;
+        this.value = value;
     }
 }
 

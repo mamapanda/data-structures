@@ -20,7 +20,7 @@ export class BinarySearchTree<T> extends Collection<T> {
      * @return the maximum value
      */
     max(): T {
-        if (this.empty()) {
+        if (this.root == null) {
             throw Error();
         }
 
@@ -32,7 +32,7 @@ export class BinarySearchTree<T> extends Collection<T> {
      * @return the minimum value
      */
     min(): T {
-        if (this.empty()) {
+        if (this.root == null) {
             throw Error();
         }
 
@@ -64,10 +64,10 @@ export class BinarySearchTree<T> extends Collection<T> {
      * See parent documentation.
      */
     erase(value: T): void {
-        let node: BSTNode<T> = this.findNode(value);
+        let node: BSTNode<T> | null = this.findNode(value);
 
         if (node != null) {
-            this.remove(this.findNode(value));
+            this.remove(node);
         }
     }
 
@@ -102,20 +102,20 @@ export class BinarySearchTree<T> extends Collection<T> {
     /**
      * The function to use when comparing values.
      */
-    protected compare: Comparator<T>;
+    protected readonly compare: Comparator<T>;
 
     /**
      * The root of _this_.
      */
-    protected root: BSTNode<T>;
+    protected root: BSTNode<T> | null;
 
     /**
      * Finds the node in _this_ with the given value.
      * @param value the value to look for
      * @return the node with the given value, or null if there is none
      */
-    protected findNode(value: T): BSTNode<T> {
-        if (this.empty()) {
+    protected findNode(value: T): BSTNode<T> | null {
+        if (this.root == null) {
             return null;
         }
 
@@ -151,9 +151,9 @@ export class BinarySearchTree<T> extends Collection<T> {
      * @return whether the value was inserted into _this_
      */
     protected insert(value: T,
-                     makeNode: (value: T, parent: BSTNode<T>) => BSTNode<T>
+                     makeNode: (value: T, parent: BSTNode<T> | null) => BSTNode<T>
                     ): boolean {
-        if (this.empty()) {
+        if (this.root == null) {
             this.root = makeNode(value, null);
             return true;
         } else {
@@ -191,24 +191,26 @@ export class BinarySearchTree<T> extends Collection<T> {
      * @param node the node with the value to delete
      * @return the parent of the physically removed node
      */
-    protected remove(node: BSTNode<T>): BSTNode<T> {
+    protected remove(node: BSTNode<T>): BSTNode<T> | null {
         if (node == this.root) { // node.parent == null
             return this.eraseRoot();
         } else { // node.parent != null
+            let parent: BSTNode<T> = node.parent!;
+
             if (node.right == null) {
-                node.parent.replaceDirectChild(node, node.left);
-                return node.parent;
+                parent.replaceDirectChild(node, node.left);
+                return parent;
             } else if (node.left == null) {
-                node.parent.replaceDirectChild(node, node.right);
-                return node.parent;
+                parent.replaceDirectChild(node, node.right);
+                return parent;
             } else {
                 let replacement: BSTNode<T> = node.right.leftmost();
 
                 node.value = replacement.value;
                 // replacement is leftmost, but may still have right children
-                replacement.parent.replaceDirectChild(replacement, replacement.right);
+                replacement.parent!.replaceDirectChild(replacement, replacement.right);
 
-                return replacement.parent;
+                return replacement.parent!;
             }
         }
     }
@@ -221,7 +223,11 @@ export class BinarySearchTree<T> extends Collection<T> {
      * before the rotation
      */
     protected rotateLeft(node: BSTNode<T>): BSTNode<T> {
-        let parent: BSTNode<T> = node.parent;
+        if (node.right == null) {
+            throw Error();
+        }
+
+        let parent: BSTNode<T> | null = node.parent;
         let newSubroot: BSTNode<T> = node.right;
 
         node.right = newSubroot.left;
@@ -251,7 +257,11 @@ export class BinarySearchTree<T> extends Collection<T> {
      * before the rotation
      */
     protected rotateRight(node: BSTNode<T>): BSTNode<T> {
-        let parent: BSTNode<T> = node.parent;
+        if (node.left == null) {
+            throw Error();
+        }
+
+        let parent: BSTNode<T> | null = node.parent;
         let newSubroot: BSTNode<T> = node.left;
 
         node.left = newSubroot.right;
@@ -279,20 +289,34 @@ export class BinarySearchTree<T> extends Collection<T> {
      * _this_.root.
      * @return the parent of the physically removed node
      */
-    private eraseRoot(): BSTNode<T> {
-        if (this.root.right == null) {
-            this.root = this.root.left;
-            return null;
-        } else if (this.root.left == null) {
-            this.root = this.root.right;
-            return null;
+    private eraseRoot(): BSTNode<T> | null {
+        if (this.root != null) {
+            if (this.root.right == null) {
+                this.root = this.root.left;
+
+                if (this.root != null) {
+                    this.root.parent = null;
+                }
+
+                return null;
+            } else if (this.root.left == null) {
+                this.root = this.root.right;
+
+                if (this.root != null) {
+                    this.root.parent = null;
+                }
+
+                return null;
+            } else {
+                let newRoot: BSTNode<T> = this.root.right.leftmost();
+
+                this.root.value = newRoot.value;
+                newRoot.parent!.replaceDirectChild(newRoot, newRoot.right);
+
+                return newRoot.parent!;
+            }
         } else {
-            let newRoot: BSTNode<T> = this.root.right.leftmost();
-
-            this.root.value = newRoot.value;
-            newRoot.parent.replaceDirectChild(newRoot, newRoot.right);
-
-            return newRoot.parent;
+            throw Error();
         }
     }
 }
@@ -305,17 +329,17 @@ export class BSTNode<T> {
     /**
      * The left child of _this_, or null if this has no left child.
      */
-    left: BSTNode<T>;
+    left: BSTNode<T> | null;
 
     /**
      * The parent of _this_, or null if _this_ has no parent.
      */
-    parent: BSTNode<T>;
+    parent: BSTNode<T> | null;
 
     /**
      * The right child of _this_, or null if _this_ has no right child.
      */
-    right: BSTNode<T>;
+    right: BSTNode<T> | null;
 
     /**
      * The value contained in _this_.
@@ -330,9 +354,9 @@ export class BSTNode<T> {
      * @param right the right child of _this_
      */
     constructor(value: T,
-                parent: BSTNode<T>,
-                left: BSTNode<T> = null,
-                right: BSTNode<T> = null) {
+                parent: BSTNode<T> | null,
+                left: BSTNode<T> | null = null,
+                right: BSTNode<T> | null = null) {
         this.left = left;
         this.parent = parent;
         this.right = right;
@@ -375,7 +399,7 @@ export class BSTNode<T> {
      * @param child the child to replace
      * @param newChild the replacement child
      */
-    replaceDirectChild(child: BSTNode<T>, newChild: BSTNode<T>): void {
+    replaceDirectChild(child: BSTNode<T>, newChild: BSTNode<T> | null): void {
         if (child == this.left) {
             this.left = newChild;
         } else if (child == this.right) {
@@ -412,10 +436,10 @@ export class BSTNode<T> {
 /**
  * @return an Iterator that iterates over the subtree rooted at the given node
  */
-function* iterate<T>(node: BSTNode<T>): Iterator<T> {
+function* iterate<T>(node: BSTNode<T> | null): Iterator<T> {
     if (node != null) {
-        yield* iterate(node.left)[Symbol.iterator]();
+        yield* iterate(node.left!)[Symbol.iterator](); // null checked by function
         yield node.value;
-        yield* iterate(node.right)[Symbol.iterator]();
+        yield* iterate(node.right!)[Symbol.iterator]();
     }
 }

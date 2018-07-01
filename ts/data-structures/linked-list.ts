@@ -22,7 +22,7 @@ export class LinkedList<T> extends List<T> {
      * @return the last value
      */
     peekBack(): T {
-        if (this.empty()) {
+        if (this.last == null) {
             throw Error();
         }
 
@@ -35,7 +35,7 @@ export class LinkedList<T> extends List<T> {
      * @return the first value
      */
     peekFront(): T {
-        if (this.empty()) {
+        if (this.head == null) {
             throw Error();
         }
 
@@ -48,7 +48,7 @@ export class LinkedList<T> extends List<T> {
      * @return the removed value
      */
     popBack(): T {
-        if (this.empty()) {
+        if (this.last == null) {
             throw Error();
         }
 
@@ -71,7 +71,7 @@ export class LinkedList<T> extends List<T> {
      * @return the removed value
      */
     popFront(): T {
-        if (this.empty()) {
+        if (this.head == null) {
             throw Error();
         }
 
@@ -98,7 +98,7 @@ export class LinkedList<T> extends List<T> {
             this.head = node;
             this.last = node;
         } else {
-            link(this.last, node);
+            link(this.last!, node);
             this.last = node;
         }
     }
@@ -113,7 +113,7 @@ export class LinkedList<T> extends List<T> {
             this.head = node;
             this.last = node;
         } else {
-            link(node, this.head);
+            link(node, this.head!);
             this.head = node;
         }
     }
@@ -138,7 +138,7 @@ export class LinkedList<T> extends List<T> {
             let node: LLNode<T> = this.nodeAt(index);
             let newNode: LLNode<T> = new LLNode<T>(value);
 
-            link(node.previous, newNode);
+            link(node.previous!, newNode);
             link(newNode, node);
         } else if (index == currentSize) {
             this.pushBack(value);
@@ -174,14 +174,17 @@ export class LinkedList<T> extends List<T> {
      */
     erase(value: T): void {
         let i: number = 0;
+        let node: LLNode<T> | null = this.head;
 
-        for (let node: LLNode<T> = this.head; node != null; node = node.next) {
+        while (node != null) {
             if (this.equal(node.value, value)) {
                 this.eraseAt(i);
                 break;
             }
 
             ++i;
+
+            node = node.next;
         }
     }
 
@@ -191,23 +194,19 @@ export class LinkedList<T> extends List<T> {
     eraseAt(index: number): void {
         let node: LLNode<T> = this.nodeAt(index);
 
-        let previous: LLNode<T> = node.previous;
-        let next: LLNode<T> = node.next;
-
         if (node == this.head && node == this.last) { // single-element list
             this.head = null;
             this.last = null;
         } else if (node == this.head) { // node.previous == null
-            if (next != null) {
-                unlink(node, next);
-            }
-            this.head = next;
+            this.head = this.head.next!;
+            unlink(node, node.next!);
         } else if (node == this.last) { // node.next == null
-            if (previous != null) {
-                unlink(previous, node);
-            }
-            this.last = previous;
+            this.last = this.last.previous!;
+            unlink(node.previous!, node);
         } else {
+            let previous: LLNode<T> = node.previous!;
+            let next: LLNode<T> = node.next!;
+
             unlink(previous, node);
             unlink(node, next);
             link(previous, next);
@@ -218,10 +217,14 @@ export class LinkedList<T> extends List<T> {
      * See parent documentation.
      */
     find(value: T): boolean {
-        for (let node: LLNode<T> = this.head; node != null; node = node.next) {
+        let node: LLNode<T> | null = this.head;
+
+        while (node != null) {
             if (this.equal(node.value, value)) {
                 return true;
             }
+
+            node = node.next;
         }
 
         return false;
@@ -231,8 +234,12 @@ export class LinkedList<T> extends List<T> {
      * See parent documentation.
      */
     *iterator(): Iterator<T> {
-        for (let node: LLNode<T> = this.head; node != null; node = node.next) {
+        let node: LLNode<T> | null = this.head;
+
+        while (node != null) {
             yield node.value;
+
+            node = node.next;
         }
     }
 
@@ -241,9 +248,11 @@ export class LinkedList<T> extends List<T> {
      */
     size(): number {
         let size: number = 0;
+        let node: LLNode<T> | null = this.head;
 
-        for (let node: LLNode<T> = this.head; node != null; node = node.next) {
+        while (node != null) {
             ++size;
+            node = node.next;
         }
 
         return size;
@@ -266,17 +275,17 @@ export class LinkedList<T> extends List<T> {
     /**
      * The function to use when checking if two values are equal.
      */
-    private equal: Equality<T>;
+    private readonly equal: Equality<T>;
 
     /**
      * The first node in _this_.
      */
-    private head: LLNode<T>;
+    private head: LLNode<T> | null;
 
     /**
      * The last node in _this_.
      */
-    private last: LLNode<T>;
+    private last: LLNode<T> | null;
 
     /**
      * Finds the node at the given index. An error is thrown if
@@ -289,7 +298,7 @@ export class LinkedList<T> extends List<T> {
             throw Error();
         }
 
-        let node: LLNode<T> = this.head;
+        let node: LLNode<T> | null = this.head;
         let i: number = 0;
 
         while (i < index && node != null) {
@@ -312,12 +321,12 @@ class LLNode<T> {
     /**
      * The next node from _this_.
      */
-    next: LLNode<T>;
+    next: LLNode<T> | null;
 
     /**
      * The previous node from _this_.
      */
-    previous: LLNode<T>;
+    previous: LLNode<T> | null;
 
     /**
      * The value contained in _this_.
@@ -330,7 +339,9 @@ class LLNode<T> {
      * @param previous the predecessor of _this_
      * @param next the successor of _this_
      */
-    constructor(value: T, previous: LLNode<T> = null, next: LLNode<T> = null) {
+    constructor(value: T,
+                previous: LLNode<T> | null = null,
+                next: LLNode<T> | null = null) {
         this.next = next;
         this.previous = previous;
         this.value = value;

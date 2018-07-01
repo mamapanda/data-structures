@@ -25,7 +25,7 @@ export class SplayTree<T> extends BinarySearchTree<T> {
         });
 
         if (inserted) {
-            this.splay(node);
+            this.splay(node!);
         }
     }
 
@@ -33,10 +33,10 @@ export class SplayTree<T> extends BinarySearchTree<T> {
      * See parent documentation.
      */
     erase(value: T): void {
-        let node: BSTNode<T> = this.findNode(value);
+        let node: BSTNode<T> | null = this.findNode(value);
 
         if (node != null) {
-            let parent: BSTNode<T> = node.parent;
+            let parent: BSTNode<T> | null = node.parent;
 
             super.remove(node);
 
@@ -50,7 +50,7 @@ export class SplayTree<T> extends BinarySearchTree<T> {
      * See parent documentation.
      */
     find(value: T): boolean {
-        let node: BSTNode<T> = super.findNode(value);
+        let node: BSTNode<T> | null = super.findNode(value);
 
         if (node != null) {
             this.splay(node);
@@ -65,9 +65,9 @@ export class SplayTree<T> extends BinarySearchTree<T> {
      * See parent documentation.
      */
     max(): T {
-        let max: T = super.max();
+        let max: T = super.max(); // throws error if this is empty
 
-        this.splay(this.root.rightmost());
+        this.splay(this.root!.rightmost());
 
         return max;
     }
@@ -76,9 +76,9 @@ export class SplayTree<T> extends BinarySearchTree<T> {
      * See parent documentation.
      */
     min(): T {
-        let min: T = super.min();
+        let min: T = super.min(); // throws error if this is empty
 
-        this.splay(this.root.leftmost());
+        this.splay(this.root!.leftmost());
 
         return min;
     }
@@ -119,9 +119,11 @@ export class SplayTree<T> extends BinarySearchTree<T> {
      * @param node the node to splay
      */
     private zig(node: BSTNode<T>): void {
-        if (node == node.parent.left) {
+        if (node.parent == null) {
+            throw Error();
+        } else if (node == node.parent.left) {
             this.rotateRight(node.parent);
-        } else {
+        } else { // node == node.parent.right
             this.rotateLeft(node.parent);
         }
     }
@@ -131,10 +133,12 @@ export class SplayTree<T> extends BinarySearchTree<T> {
      * @param node the node to splay
      */
     private zigzag(node: BSTNode<T>): void {
-        if (node == node.parent.left) {
+        if (node.parent == null) {
+            throw Error();
+        } else if (node == node.parent.left) {
             this.rotateRight(node.parent);
             this.rotateLeft(node.parent);
-        } else {
+        } else { // node == node.parent.right
             this.rotateLeft(node.parent);
             this.rotateRight(node.parent);
         }
@@ -145,10 +149,12 @@ export class SplayTree<T> extends BinarySearchTree<T> {
      * @param node the node to splay
      */
     private zigzig(node: BSTNode<T>): void {
-        if (node == node.parent.left) {
+        if (node.parent == null || node.parent.parent == null) {
+            throw Error();
+        } else if (node == node.parent.left) {
             this.rotateRight(node.parent.parent);
             this.rotateRight(node.parent);
-        } else {
+        } else { // node == node.parent.right
             this.rotateLeft(node.parent.parent);
             this.rotateLeft(node.parent);
         }

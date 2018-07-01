@@ -25,7 +25,7 @@ export class AVLTree<T> extends BinarySearchTree<T> {
         });
 
         if (inserted) {
-            this.rebalance(node);
+            this.rebalance(node!);
         }
     }
 
@@ -33,7 +33,7 @@ export class AVLTree<T> extends BinarySearchTree<T> {
      * See parent documentation.
      */
     erase(value: T): void {
-        let node: BSTNode<T> = this.findNode(value);
+        let node: BSTNode<T> | null = this.findNode(value);
 
         if (node != null) {
             let rebalanceNode = super.remove(node) as AVLNode<T>;
@@ -135,9 +135,9 @@ class AVLNode<T> extends BSTNode<T> {
      * @param right the right child of _this_
      */
     constructor(value: T,
-                parent: AVLNode<T>,
-                left: AVLNode<T> = null,
-                right: AVLNode<T> = null) {
+                parent: AVLNode<T> | null,
+                left: AVLNode<T> | null = null,
+                right: AVLNode<T> | null = null) {
         super(value, parent, left, right);
 
         this.updateSubHeight();

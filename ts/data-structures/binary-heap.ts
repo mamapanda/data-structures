@@ -74,7 +74,7 @@ export class BinaryHeap<T> extends Collection<T> {
             if (i == this.data.length - 1) { // last element
                 this.data.pop();
             } else {
-                this.data[i] = this.data.pop();
+                this.data[i] = this.data.pop()!;
 
                 this.heapifyDown(i);
             }
@@ -112,7 +112,7 @@ export class BinaryHeap<T> extends Collection<T> {
     /**
      * The function to use when comparing values in _this_.
      */
-    private compare: Comparator<T>;
+    private readonly compare: Comparator<T>;
 
     /**
      * An array-based heap.

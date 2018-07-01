@@ -54,7 +54,7 @@ describe('Hash Table Test', () => {
         });
         it('Multiple Inputs', () => {
             let table: HashTable<number> = new HashTable<number>(modHash(10));
-            let xs: number[] = [];
+            let xs: (number | undefined)[] = [];
 
             for (let i: number = 0; i < 1000; ++i) {
                 table.add(i);
