@@ -188,7 +188,7 @@ describe('Binary Search Tree Test', () => {
         it('Empty Tree', () => {
             let tree: BinarySearchTree<number> = new BinarySearchTree<number>();
 
-            tree.erase(0);
+            expect(tree.erase(0)).to.be.eq(false);
 
             expect(tree.empty()).to.be.eq(true);
         })
@@ -196,7 +196,7 @@ describe('Binary Search Tree Test', () => {
             let tree: BinarySearchTree<number> = new BinarySearchTree<number>();
 
             tree.add(0);
-            tree.erase(0);
+            expect(tree.erase(0)).to.be.eq(true);
 
             expect(tree.empty()).to.be.eq(true);
         })
@@ -205,7 +205,7 @@ describe('Binary Search Tree Test', () => {
             let expectedStr: string = "<b[][c[][d[][e[][f[][]]]]]>";
 
             ["a", "b", "c", "d", "e", "f"].forEach(x => tree.add(x));
-            tree.erase("a");
+            expect(tree.erase("a")).to.be.eq(true);
 
             expect(tree.toString()).to.be.eq(expectedStr);
         })
@@ -215,7 +215,7 @@ describe('Binary Search Tree Test', () => {
             let expectedStr: string = "<a[b[d[e[f[][]][]][]][]][]>";
 
             ["a", "b", "c", "d", "e", "f"].forEach(x => tree.add(x));
-            tree.erase("c");
+            expect(tree.erase("c")).to.be.eq(true);
 
             expect(tree.toString()).to.be.eq(expectedStr);
         })
@@ -225,7 +225,7 @@ describe('Binary Search Tree Test', () => {
             let expectedStr: string = "<0[2[4[6[][]][]][1[][]]][-1[][-2[][]]]>";
 
             [0, 3, 2, 2, -1, 4, 1, 2, -1, -2, 6, 3].forEach(x => tree.add(x));
-            tree.erase(3);
+            expect(tree.erase(3)).to.be.eq(true);
 
             expect(tree.toString()).to.be.eq(expectedStr);
         })
@@ -234,7 +234,7 @@ describe('Binary Search Tree Test', () => {
             let expectedStr: string = "<3[-1[][1[0[][]][2[][]]]][4[][9[][]]]>";
 
             [3, -1, 4, 9, 1, 9, 2, -6, 4, 0].forEach(x => tree.add(x));
-            tree.erase(-6);
+            expect(tree.erase(-6)).to.be.eq(true);
 
             expect(tree.toString()).to.be.eq(expectedStr);
         })
@@ -243,7 +243,7 @@ describe('Binary Search Tree Test', () => {
             let expectedStr: string = "<3[-1[-6[][]][1[0[][]][2[][]]]][4[][9[][]]]>";
 
             [3, -1, 4, 9, 1, 9, 2, -6, 4, 0].forEach(x => tree.add(x));
-            tree.erase(-99);
+            expect(tree.erase(-99)).to.be.eq(false);
 
             expect(tree.toString()).to.be.eq(expectedStr);
         })
@@ -252,21 +252,21 @@ describe('Binary Search Tree Test', () => {
         it('Empty Tree', () => {
             let tree: BinarySearchTree<number> = new BinarySearchTree<number>();
 
-            expect(tree.find(0)).to.be.eq(false);
+            expect(tree.find(0)).to.be.eq(undefined);
         })
         it('Find Only Element', () => {
             let tree: BinarySearchTree<number> = new BinarySearchTree<number>();
 
             tree.add(0);
 
-            expect(tree.find(0)).to.be.eq(true);
+            expect(tree.find(0)).to.be.eq(0);
         })
         it('Find Root', () => {
             let tree: BinarySearchTree<number> = new BinarySearchTree<number>();
 
             [3, -1, 4, 9, 1, 9, 2, -6, 4, 0].forEach(x => tree.add(x));
 
-            expect(tree.find(3)).to.be.eq(true);
+            expect(tree.find(3)).to.be.eq(3);
         })
         it('Find Internal Node (Reversed Comparator)', () => {
             let cmp: Comparator<number> = (lhs, rhs) => defaultCompare(rhs, lhs);
@@ -274,14 +274,14 @@ describe('Binary Search Tree Test', () => {
 
             [3, -1, 4, 9, 1, 9, 2, -6, 4, 0].forEach(x => tree.add(x));
 
-            expect(tree.find(-1)).to.be.eq(true);
+            expect(tree.find(-1)).to.be.eq(-1);
         })
         it('Find Leaf Node', () => {
             let tree: BinarySearchTree<string> = new BinarySearchTree<string>();
 
             ["a", "b", "c", "d", "e", "f"].forEach(x => tree.add(x));
 
-            expect(tree.find("f")).to.be.eq(true);
+            expect(tree.find("f")).to.be.eq("f");
         })
         it('Find Leaf Node (Reversed Comparator)', () => {
             let cmp: Comparator<number> = (lhs, rhs) => defaultCompare(rhs, lhs);
@@ -289,14 +289,14 @@ describe('Binary Search Tree Test', () => {
 
             [0, 3, 2, 2, -1, 4, 1, 2, -1, -2, 6, 3].forEach(x => tree.add(x));
 
-            expect(tree.find(1)).to.be.eq(true);
+            expect(tree.find(1)).to.be.eq(1);
         })
         it('Find Nonexistent Element', () => {
             let tree: BinarySearchTree<number> = new BinarySearchTree<number>();
 
             [3, -1, 4, 9, 1, 9, 2, -6, 4, 0].forEach(x => tree.add(x));
 
-            expect(tree.find(5)).to.be.eq(false);
+            expect(tree.find(5)).to.be.eq(undefined);
         })
     })
     describe('BinarySearchTree::iterator', () => {

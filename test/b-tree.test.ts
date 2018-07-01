@@ -167,7 +167,7 @@ describe('B-Tree Test', () => {
         it('Empty Tree', () => {
             let tree: BTree<number> = new BTree<number>(2);
 
-            tree.erase(11);
+            expect(tree.erase(11)).to.be.eq(false);
 
             expect(tree.size()).to.be.eq(0);
         });
@@ -175,14 +175,14 @@ describe('B-Tree Test', () => {
             let tree: BTree<number> = new BTree<number>(2);
 
             tree.add(11);
-            tree.erase(11);
+            expect(tree.erase(11)).to.be.eq(true);
 
             expect(tree.size()).to.be.eq(0);
         });
         it('Erase From Root', () => {
             withTree(tree => {
-                tree.erase(8);
-                tree.erase(7);
+                expect(tree.erase(8)).to.be.eq(true);
+                expect(tree.erase(7)).to.be.eq(true);
                 expect(tree.toString()).to.be.eq(
                     "<(6)[(2,4)[(0,1)][(3)][(5)]]"
                         + "[(11,14)[(9,10)][(12,13)][(15)]]>");
@@ -190,21 +190,21 @@ describe('B-Tree Test', () => {
         });
         it('Erase From Internal Node', () => {
             withTree(tree => {
-                tree.erase(5);
-                tree.erase(4);
-                tree.erase(6);
-                tree.erase(2);
+                expect(tree.erase(5)).to.be.eq(true);
+                expect(tree.erase(4)).to.be.eq(true);
+                expect(tree.erase(6)).to.be.eq(true);
+                expect(tree.erase(2)).to.be.eq(true);
 
-                 expect(tree.toString()).to.be.eq(
-                     "<(8)[(3)[(0,1)][(7)]]"
-                         + "[(11,14)[(9,10)][(12,13)][(15)]]>");
+                expect(tree.toString()).to.be.eq(
+                    "<(8)[(3)[(0,1)][(7)]]"
+                        + "[(11,14)[(9,10)][(12,13)][(15)]]>");
             });
         });
         it('Erase From Leaf', () => {
             withTree(tree => {
-                tree.erase(3);
-                tree.erase(4);
-                tree.erase(5);
+                expect(tree.erase(3)).to.be.eq(true);
+                expect(tree.erase(4)).to.be.eq(true);
+                expect(tree.erase(5)).to.be.eq(true);
 
                 expect(tree.toString()).to.be.eq(
                     "<(8)[(1,6)[(0)][(2)][(7)]]"
@@ -213,50 +213,55 @@ describe('B-Tree Test', () => {
         });
         it('Erase From Leaf', () => {
             withTree(tree => {
-                tree.erase(3);
-                tree.erase(4);
-                tree.erase(5);
-                tree.erase(6);
-                tree.erase(0);
-                tree.erase(1);
+                expect(tree.erase(3)).to.be.eq(true);
+                expect(tree.erase(4)).to.be.eq(true);
+                expect(tree.erase(5)).to.be.eq(true);
+                expect(tree.erase(6)).to.be.eq(true);
+                expect(tree.erase(0)).to.be.eq(true);
+                expect(tree.erase(1)).to.be.eq(true);
 
                 expect(tree.toString()).to.be.eq(
                     "<(11)[(8)[(2,7)][(9,10)]][(14)[(12,13)][(15)]]>");
             });
+        });
+        it('Erase Nonexistent Element', () => {
+            withTree(tree => {
+                expect(tree.erase(-999)).to.be.eq(false);
+            })
         });
     });
     describe('BTree::find', () => {
         it('Empty Tree', () => {
             let tree: BTree<number> = new BTree<number>(99);
 
-            expect(tree.find(0)).to.be.eq(false);
+            expect(tree.find(0)).to.be.eq(undefined);
         });
         it('Find Only Element', () => {
             let tree: BTree<number> = new BTree<number>(4);
 
             tree.add(0);
 
-            expect(tree.find(0)).to.be.eq(true);
+            expect(tree.find(0)).to.be.eq(0);
         });
         it('Find Root', () => {
             withTree(tree => {
-                expect(tree.find(8)).to.be.eq(true);
+                expect(tree.find(8)).to.be.eq(8);
             });
         });
         it('Find Internal Node', () => {
             withTree(tree => {
-                expect(tree.find(14)).to.be.eq(true);
+                expect(tree.find(14)).to.be.eq(14);
             });
         });
         it('Find Leaf Node', () => {
             withTree(tree => {
-                expect(tree.find(3)).to.be.eq(true);
+                expect(tree.find(3)).to.be.eq(3);
             });
         });
         it('Find Nonexistent Element', () => {
             withTree(tree => {
                 tree.erase(5);
-                expect(tree.find(5)).to.be.eq(false);
+                expect(tree.find(5)).to.be.eq(undefined);
             });
         });
     });

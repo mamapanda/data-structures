@@ -22,15 +22,18 @@ export abstract class Collection<T> {
      * Erases the given value from _this_.
      * Nothing is done if _this_ does not contain the value.
      * @param value the value to erase
+     * @return whether the value was found
      */
-    abstract erase(value: T): void;
+    abstract erase(value: T): boolean;
 
     /**
-     * Checks if _this_ contains the given value.
+     * Finds the given value in _this_. If _this_ is a collection in which
+     * element order matters, then modifying the returned value may lead
+     * to errors.
      * @param value the value to check for
-     * @return whether _this_ contains the given value
+     * @return the value, or undefined if it is not found
      */
-    abstract find(value: T): boolean;
+    abstract find(value: T): T | undefined;
 
     /**
      * @return an Iterator object that iterates over the values in _this_
@@ -46,6 +49,15 @@ export abstract class Collection<T> {
      * @return the string representation of _this_
      */
     abstract toString(): string;
+
+    /**
+     * Finds the given value in _this_.
+     * @param value the value to find
+     * @return whether the value was found
+     */
+    contains(value: T): boolean {
+        return this.find(value) !== undefined;
+    }
 
     /**
      * Converts _this_ into an array.
@@ -85,8 +97,9 @@ export abstract class Indexable<T> extends Collection<T> {
      * Erases the value at the given index.
      * An error is thrown if the index is out of bounds.
      * @param index the index
+     * @return the value that was erased
      */
-    abstract eraseAt(index: number): void;
+    abstract eraseAt(index: number): T;
 }
 
 /**
@@ -107,8 +120,9 @@ export abstract class List<T> extends Indexable<T> {
      * An error is thrown if the index is out of bounds.
      * @param index the index
      * @param value the new value
+     * @return the value that was replaced
      */
-    abstract update(index: number, value: T): void;
+    abstract update(index: number, value: T): T;
 }
 
 /**

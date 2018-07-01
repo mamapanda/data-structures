@@ -195,7 +195,7 @@ describe('Binary Heap Test', () => {
         it('Empty Heap', () => {
             let heap: BinaryHeap<number> = new BinaryHeap<number>();
 
-            heap.erase(0);
+            expect(heap.erase(0)).to.be.eq(false);
 
             expect(heap.empty()).to.be.eq(true);
         })
@@ -203,7 +203,7 @@ describe('Binary Heap Test', () => {
             let heap: BinaryHeap<number> = new BinaryHeap<number>();
 
             heap.add(0);
-            heap.erase(0);
+            expect(heap.erase(0)).to.be.eq(true);
 
             expect(heap.empty()).to.be.eq(true);
         })
@@ -212,7 +212,7 @@ describe('Binary Heap Test', () => {
             let heap: BinaryHeap<number> = new BinaryHeap<number>(cmp);
 
             [6,1,0,3,4,8,9,7].forEach(x => heap.add(x))
-            heap.erase(heap.min());
+            expect(heap.erase(heap.min())).to.be.eq(true);
 
             expect(heap.toArray()).to.be.deep.equal([8, 7, 6, 4, 3, 0, 1]);
         })
@@ -220,7 +220,7 @@ describe('Binary Heap Test', () => {
             let heap: BinaryHeap<number> = new BinaryHeap<number>();
 
             [3, -1, 4, 9, 1, 9, 2, -6, 4, 0].forEach(x => heap.add(x));
-            heap.erase(-1);
+            expect(heap.erase(-1)).to.be.eq(true);
 
             expect(heap.toArray()).to.be.deep.equal([-6, 0, 2, 1, 3, 9, 4, 9, 4]);
         })
@@ -228,7 +228,7 @@ describe('Binary Heap Test', () => {
             let heap: BinaryHeap<number> = new BinaryHeap<number>();
 
             [3, -1, 4, 9, 1, 9, 2, -6, 4, 0].forEach(x => heap.add(x));
-            heap.erase(3);
+            expect(heap.erase(3)).to.be.eq(true);
 
             expect(heap.toArray()).to.be.deep.equal([-6, -1, 2, 1, 0, 9, 4, 9, 4]);
         })
@@ -237,7 +237,7 @@ describe('Binary Heap Test', () => {
 
             [3, -1, 4, 9, 1, 9, 2, -6, 4, 0].forEach(x => heap.add(x));
 
-            heap.erase(-99);
+            expect(heap.erase(-99)).to.be.eq(false);
 
             expect(heap.toArray()).to.be.deep.equal([-6, -1, 2, 1, 0, 9, 4, 9, 4, 3]);
         })
@@ -246,21 +246,21 @@ describe('Binary Heap Test', () => {
         it('Empty Heap', () => {
             let heap: BinaryHeap<number> = new BinaryHeap<number>();
 
-            expect(heap.find(0)).to.be.eq(false);
+            expect(heap.find(0)).to.be.eq(undefined);
         })
         it('Find Only Element', () => {
             let heap: BinaryHeap<number> = new BinaryHeap<number>();
 
             heap.add(0);
 
-            expect(heap.find(0)).to.be.eq(true);
+            expect(heap.find(0)).to.be.eq(0);
         })
         it('Find Min', () => {
             let heap: BinaryHeap<number> = new BinaryHeap<number>();
 
             [3, -1, 4, 9, 1, 9, 2, -6, 4, 0].forEach(x => heap.add(x));
 
-            expect(heap.find(heap.min())).to.be.eq(true);
+            expect(heap.find(heap.min())).to.be.eq(heap.min());
         })
         it('Find Internal Node (Reversed Comparator)', () => {
             let cmp: Comparator<number> = (lhs, rhs) => defaultCompare(rhs, lhs);
@@ -268,21 +268,21 @@ describe('Binary Heap Test', () => {
 
             [3, -1, 4, 9, 1, 9, 2, -6, 4, 0].forEach(x => heap.add(x));
 
-            expect(heap.find(-1)).to.be.eq(true);
+            expect(heap.find(-1)).to.be.eq(-1);
         })
         it('Find Leaf Node', () => {
             let heap: BinaryHeap<string> = new BinaryHeap<string>();
 
             ["a", "b", "c", "d", "e", "f"].forEach(x => heap.add(x));
 
-            expect(heap.find("f")).to.be.eq(true);
+            expect(heap.find("f")).to.be.eq("f");
         })
         it('Find Nonexistent Element', () => {
             let heap: BinaryHeap<number> = new BinaryHeap<number>();
 
             [3, -1, 4, 9, 1, 9, 2, -6, 4, 0].forEach(x => heap.add(x));
 
-            expect(heap.find(5)).to.be.eq(false);
+            expect(heap.find(5)).to.be.eq(undefined);
         })
     })
     describe('BinaryHeap::iterator', () => {

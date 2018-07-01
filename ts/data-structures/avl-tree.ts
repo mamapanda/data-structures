@@ -32,7 +32,7 @@ export class AVLTree<T> extends BinarySearchTree<T> {
     /**
      * See parent documentation.
      */
-    erase(value: T): void {
+    erase(value: T): boolean {
         let node: BSTNode<T> | null = this.findNode(value);
 
         if (node != null) {
@@ -41,6 +41,10 @@ export class AVLTree<T> extends BinarySearchTree<T> {
             if (rebalanceNode != null) {
                 this.rebalance(rebalanceNode);
             }
+
+            return true;
+        } else {
+            return false;
         }
     }
 

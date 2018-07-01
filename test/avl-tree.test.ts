@@ -53,7 +53,7 @@ describe('AVL Tree Test', () => {
         it('Empty Tree', () => {
             let tree: AVLTree<number> = new AVLTree<number>();
 
-            tree.erase(0);
+            expect(tree.erase(0)).to.be.eq(false);
 
             expect(tree.empty()).to.be.eq(true);
         })
@@ -61,7 +61,7 @@ describe('AVL Tree Test', () => {
             let tree: AVLTree<number> = new AVLTree<number>();
 
             tree.add(0);
-            tree.erase(0);
+            expect(tree.erase(0)).to.be.eq(true);
 
             expect(tree.empty()).to.be.eq(true);
         })
@@ -72,7 +72,7 @@ describe('AVL Tree Test', () => {
                 + "[67[45[][]][124[98[][]][234[][]]]]>";
 
             xs.forEach(x => tree.add(x));
-            tree.erase(32);
+            expect(tree.erase(32)).to.be.eq(true);
 
             expect(tree.toString()).to.be.eq(expectedStr);
         })
@@ -83,7 +83,7 @@ describe('AVL Tree Test', () => {
                 + "[67[34[][45[][]]][124[98[][]][234[][]]]]>";
 
             xs.forEach(x => tree.add(x));
-            tree.erase(25);
+            expect(tree.erase(25)).to.be.eq(true);
 
             expect(tree.toString()).to.be.eq(expectedStr);
         })
@@ -95,7 +95,7 @@ describe('AVL Tree Test', () => {
                 + "[-67[-34[][-45[][]]][-124[-98[][]][-234[][]]]]>";
 
             xs.forEach(x => tree.add(x));
-            tree.erase(-29);
+            expect(tree.erase(-29)).to.be.eq(true);
 
             expect(tree.toString()).to.be.eq(expectedStr);
         })
@@ -106,7 +106,7 @@ describe('AVL Tree Test', () => {
                 + "[67[34[][45[][]]][124[98[][]][234[][]]]]>";
 
             xs.forEach(x => tree.add(x));
-            tree.erase(-99);
+            expect(tree.erase(-99)).to.be.eq(false);
 
             expect(tree.toString()).to.be.eq(expectedStr);
         })

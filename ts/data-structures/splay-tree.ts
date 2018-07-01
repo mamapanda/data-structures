@@ -32,7 +32,7 @@ export class SplayTree<T> extends BinarySearchTree<T> {
     /**
      * See parent documentation.
      */
-    erase(value: T): void {
+    erase(value: T): boolean {
         let node: BSTNode<T> | null = this.findNode(value);
 
         if (node != null) {
@@ -43,21 +43,25 @@ export class SplayTree<T> extends BinarySearchTree<T> {
             if (parent != null) {
                 this.splay(parent);
             }
+
+            return true;
+        } else {
+            return false;
         }
     }
 
     /**
      * See parent documentation.
      */
-    find(value: T): boolean {
+    find(value: T): T | undefined {
         let node: BSTNode<T> | null = super.findNode(value);
 
         if (node != null) {
             this.splay(node);
 
-            return true;
+            return node.value;
         } else {
-            return false;
+            return undefined;
         }
     }
 

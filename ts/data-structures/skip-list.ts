@@ -64,21 +64,27 @@ export class SkipList<T> extends Indexable<T> {
     /**
      * See parent documentation.
      */
-    erase(value: T): void {
+    erase(value: T): boolean {
+        let found: boolean = false;
+
         this.previousOf(value).forEach((previous: SLNode<T>, i: number) => {
             let level: number = i;
             let current: SLNode<T> | null = previous.next[level];
 
             if (current != null && this.compare(value, current.value!) == 0) {
                 previous.next[level] = current.next[level];
+
+                found = true;
             }
         });
+
+        return found;
     }
 
     /**
      * See parent documentation.
      */
-    eraseAt(index: number): void {
+    eraseAt(index: number): T {
         let node: SLNode<T> = this.nodeAt(index);
 
         this.previousOf(node.value!).forEach((previous: SLNode<T>, i: number) => {
@@ -88,16 +94,22 @@ export class SkipList<T> extends Indexable<T> {
                 previous.next[level] = node.next[level];
             }
         });
+
+        return node.value!;
     }
 
     /**
      * See parent documentation.
      */
-    find(value: T): boolean {
+    find(value: T): T | undefined {
         let previous: SLNode<T> = this.previousOf(value)[0];
         let node: SLNode<T> | null = previous.next[0];
 
-        return node != null && this.compare(node.value!, value) == 0;
+        if (node != null && this.compare(node.value!, value) == 0) {
+            return node.value!;
+        } else {
+            return undefined;
+        }
     }
 
     /**

@@ -47,7 +47,7 @@ describe('Splay Tree Test', () => {
         it('Empty Tree', () => {
             let tree: SplayTree<number> = new SplayTree<number>();
 
-            tree.erase(0);
+            expect(tree.erase(0)).to.be.eq(false);
 
             expect(tree.empty()).to.be.eq(true);
         })
@@ -55,7 +55,7 @@ describe('Splay Tree Test', () => {
             let tree: SplayTree<number> = new SplayTree<number>();
 
             tree.add(0);
-            tree.erase(0);
+            expect(tree.erase(0)).to.be.eq(true);
 
             expect(tree.empty()).to.be.eq(true);
         })
@@ -65,7 +65,7 @@ describe('Splay Tree Test', () => {
 
             [6,1,0,3,4,8,9,7].forEach(x => tree.add(x))
 
-            tree.erase(7);
+            expect(tree.erase(7)).to.be.eq(true);
 
             expect(tree.toString()).to.be.eq(expectedStr);
         })
@@ -75,7 +75,7 @@ describe('Splay Tree Test', () => {
 
             [6,1,0,3,4,8,9,7].forEach(x => tree.add(x))
 
-            tree.erase(3);
+            expect(tree.erase(3)).to.be.eq(true);
 
             expect(tree.toString()).to.be.eq(expectedStr);
         })
@@ -86,7 +86,7 @@ describe('Splay Tree Test', () => {
 
             [6,1,0,3,4,8,9,7].forEach(x => tree.add(x))
 
-            tree.erase(8);
+            expect(tree.erase(8)).to.be.eq(true);
 
             expect(tree.toString()).to.be.eq(expectedStr);
         })
@@ -96,7 +96,7 @@ describe('Splay Tree Test', () => {
             let expectedStr: string = "<7[9[][8[][]]][6[][4[][3[][0[1[][]][]]]]]>";
 
             [6,1,0,3,4,8,9,7].forEach(x => tree.add(x))
-            tree.erase(-99);
+            expect(tree.erase(-99)).to.be.eq(false);
 
             expect(tree.toString()).to.be.eq(expectedStr);
         })
@@ -105,14 +105,14 @@ describe('Splay Tree Test', () => {
         it('Empty Tree', () => {
             let tree: SplayTree<number> = new SplayTree<number>();
 
-            expect(tree.find(0)).to.be.eq(false);
+            expect(tree.find(0)).to.be.eq(undefined);
         })
         it('Find Only Element', () => {
             let tree: SplayTree<number> = new SplayTree<number>();
 
             tree.add(0);
 
-            expect(tree.find(0)).to.be.eq(true);
+            expect(tree.find(0)).to.be.eq(0);
         })
         it('Find Root', () => {
             let tree: SplayTree<number> = new SplayTree<number>();
@@ -120,7 +120,7 @@ describe('Splay Tree Test', () => {
 
             [6,1,0,3,4,8,9,7].forEach(x => tree.add(x));
 
-            expect(tree.find(7)).to.be.eq(true);
+            expect(tree.find(7)).to.be.eq(7);
             expect(tree.toString()).to.be.eq(expectedStr);
         })
         it('Find Internal Node', () => {
@@ -129,7 +129,7 @@ describe('Splay Tree Test', () => {
 
             [6,1,0,3,4,8,9,7].forEach(x => tree.add(x));
 
-            expect(tree.find(3)).to.be.eq(true);
+            expect(tree.find(3)).to.be.eq(3);
             expect(tree.toString()).to.be.eq(expectedStr);
         })
         it('Find Leaf (Reversed Comparator)', () => {
@@ -139,7 +139,7 @@ describe('Splay Tree Test', () => {
 
             [6,1,0,3,4,8,9,7].forEach(x => tree.add(x))
 
-            expect(tree.find(1)).to.be.eq(true);
+            expect(tree.find(1)).to.be.eq(1);
             expect(tree.toString()).to.be.eq(expectedStr);
         })
         it('Find Nonexistent Element', () => {
@@ -149,7 +149,7 @@ describe('Splay Tree Test', () => {
 
             [6,1,0,3,4,8,9,7].forEach(x => tree.add(x))
 
-            expect(tree.find(-99)).to.be.eq(false);
+            expect(tree.find(-99)).to.be.eq(undefined);
             expect(tree.toString()).to.be.eq(expectedStr);
         })
     })

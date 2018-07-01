@@ -98,7 +98,7 @@ export class BTree<T> extends Collection<T> {
     /**
      * See parent documentation.
      */
-    erase(value: T): void {
+    erase(value: T): boolean {
         let [node, i]: [BNode<T> | null, number] = this.findLocation(value);
 
         if (node != null) {
@@ -111,14 +111,24 @@ export class BTree<T> extends Collection<T> {
                 node.values[i] = rightmost.values.pop()!;
                 this.rebalanceUnder(rightmost);
             }
+
+            return true;
+        } else {
+            return false;
         }
     }
 
     /**
      * See parent documentation.
      */
-    find(value: T): boolean {
-        return this.findLocation(value)[0] != null;
+    find(value: T): T | undefined {
+        let [node, i]: [BNode<T> | null, number] = this.findLocation(value);
+
+        if (node != null) {
+            return node.values[i];
+        } else {
+            return undefined;
+        }
     }
 
     /**

@@ -126,7 +126,7 @@ describe('Hash Table Test', () => {
         it('Empty Table', () => {
             let table: HashTable<number> = new HashTable<number>(modHash(5));
 
-            table.erase(10);
+            expect(table.erase(10)).to.be.eq(false);
 
             expect(table.empty()).to.be.eq(true);
             expect(table.toString()).to.be.eq('[,,,,,,,,,]');
@@ -135,7 +135,7 @@ describe('Hash Table Test', () => {
             let table: HashTable<number> = new HashTable<number>(modHash(5));
 
             table.add(4);
-            table.erase(4);
+            expect(table.erase(4)).to.be.eq(true);
 
             expect(table.empty()).to.be.eq(true);
             expect(table.toString()).to.be.eq('[,,,,,,,,,]');
@@ -144,7 +144,7 @@ describe('Hash Table Test', () => {
             let table: HashTable<number> = new HashTable<number>(modHash(10));
 
             [14, 31, 26, 5, 3, 7, 5, 1, 34, 10, 31].forEach(x => table.add(x));
-            table.erase(10);
+            expect(table.erase(10)).to.be.eq(true);
 
             expect(table.size()).to.be.eq(8);
 
@@ -154,7 +154,7 @@ describe('Hash Table Test', () => {
             let table: HashTable<number> = new HashTable<number>(modHash(10));
 
             [14, 31, 26, 5, 3, 7, 5, 1, 34, 10, 31].forEach(x => table.add(x));
-            table.erase(34);
+            expect(table.erase(34)).to.be.eq(true);
 
             expect(table.size()).to.be.eq(8);
 
@@ -164,8 +164,8 @@ describe('Hash Table Test', () => {
             let table: HashTable<number> = new HashTable<number>(modHash(10));
 
             [14, 31, 26, 3, 7, 1, 34, 10, 31, 9].forEach(x => table.add(x));
-            table.erase(14);
-            table.erase(34);
+            expect(table.erase(14)).to.be.eq(true);
+            expect(table.erase(34)).to.be.eq(true);
 
             expect(table.size()).to.be.eq(7);
 
@@ -175,7 +175,7 @@ describe('Hash Table Test', () => {
             let table: HashTable<number> = new HashTable<number>(modHash(10));
 
             [14, 31, 26, 5, 3, 7, 5, 1, 34, 10, 31].forEach(x => table.add(x));
-            table.erase(-10);
+            expect(table.erase(-10)).to.be.eq(false);
 
             expect(table.size()).to.be.eq(9);
 
@@ -186,28 +186,28 @@ describe('Hash Table Test', () => {
         it('Empty Table', () => {
              let table: HashTable<number> = new HashTable<number>(modHash(5));
 
-             expect(table.find(10)).to.be.eq(false);
+             expect(table.find(10)).to.be.eq(undefined);
         });
         it('Single Element', () => {
             let table: HashTable<number> = new HashTable<number>(modHash(5));
 
             table.add(4);
 
-            expect(table.find(4)).to.be.eq(true);
+            expect(table.find(4)).to.be.eq(4);
         });
         it('Multiple Elements', () => {
             let table: HashTable<number> = new HashTable<number>(modHash(10));
 
             [14, 31, 26, 5, 3, 7, 5, 1, 34, 10, 31].forEach(x => table.add(x));
 
-            expect(table.find(10)).to.be.eq(true);
+            expect(table.find(10)).to.be.eq(10);
         });
         it('Multiple Elements', () => {
             let table: HashTable<number> = new HashTable<number>(modHash(10));
 
             [14, 31, 26, 5, 3, 7, 5, 1, 34, 10, 31].forEach(x => table.add(x));
 
-            expect(table.find(34)).to.be.eq(true);
+            expect(table.find(34)).to.be.eq(34);
         });
         it('Multiple Elements', () => {
             let table: HashTable<number> = new HashTable<number>(modHash(10));
@@ -215,14 +215,14 @@ describe('Hash Table Test', () => {
             [14, 31, 26, 3, 7, 1, 34, 10, 31, 9].forEach(x => table.add(x));
             table.erase(14);
 
-            expect(table.find(34)).to.be.eq(true);
+            expect(table.find(34)).to.be.eq(34);
         });
         it('Nonexistent Element', () => {
             let table: HashTable<number> = new HashTable<number>(modHash(10));
 
             [14, 31, 26, 5, 3, 7, 5, 1, 34, 10, 31].forEach(x => table.add(x));
 
-            expect(table.find(-10)).to.be.eq(false);
+            expect(table.find(-10)).to.be.eq(undefined);
         });
     });
     describe('HashTable::iterator', () => {

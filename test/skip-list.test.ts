@@ -119,7 +119,7 @@ describe('Skip List Test', () => {
                 xs.forEach(x => list.add(x));
 
                 sort(xs);
-                list.erase(xs[index]);
+                expect(list.erase(xs[index])).to.be.eq(true);
                 xs.splice(index, 1);
 
                 expect(list.toArray()).to.be.deep.equal(xs);
@@ -129,7 +129,7 @@ describe('Skip List Test', () => {
         it('Empty List', () => {
             let list: SkipList<number> = new SkipList<number>();
 
-            list.erase(0);
+            expect(list.erase(0)).to.be.eq(false);
 
             expect(list.toArray()).to.be.deep.equal([]);
         });
@@ -143,7 +143,7 @@ describe('Skip List Test', () => {
 
             xs.forEach(x => list.add(x));
 
-            list.erase(999);
+            expect(list.erase(999)).to.be.eq(false);
 
             expect(list.toArray()).to.be.deep.equal(sort(xs));
         });
@@ -155,9 +155,8 @@ describe('Skip List Test', () => {
 
                 xs.forEach(x => list.add(x));
 
-                list.eraseAt(index);
-
                 sort(xs);
+                expect(list.eraseAt(index)).to.be.eq(xs[index]);
                 xs.splice(index, 1);
 
                 expect(list.toArray()).to.be.deep.equal(xs);
@@ -192,7 +191,9 @@ describe('Skip List Test', () => {
 
                 xs.forEach(x => list.add(x));
 
-                expect(list.find(value)).to.be.eq(xs.some(x => x == value));
+                expect(list.find(value)).to.be.eq(
+                    xs.some(x => x == value) ? value : undefined
+                );
             });
         }
 

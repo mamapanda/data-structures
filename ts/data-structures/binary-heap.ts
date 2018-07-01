@@ -67,7 +67,7 @@ export class BinaryHeap<T> extends Collection<T> {
     /**
      * See parent documentation.
      */
-    erase(value: T): void {
+    erase(value: T): boolean {
         let i: number = this.indexOf(value);
 
         if (i >= 0) {
@@ -78,14 +78,24 @@ export class BinaryHeap<T> extends Collection<T> {
 
                 this.heapifyDown(i);
             }
+
+            return true;
+        } else {
+            return false;
         }
     }
 
     /**
      * See parent documentation.
      */
-    find(value: T): boolean {
-        return this.indexOf(value) >= 0;
+    find(value: T): T | undefined {
+        let i: number = this.indexOf(value);
+
+        if (i >= 0) {
+            return this.data[i];
+        } else {
+            return undefined;
+        }
     }
 
     /**

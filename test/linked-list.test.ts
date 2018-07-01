@@ -324,7 +324,7 @@ describe('Linked List Test', () => {
         it('Empty List', () => {
             let list: LinkedList<number> = new LinkedList<number>();
 
-            list.erase(0);
+            expect(list.erase(0)).to.be.eq(false);
 
             expect(list.toArray()).to.deep.equal([]);
         })
@@ -332,7 +332,7 @@ describe('Linked List Test', () => {
             let list: LinkedList<number> = new LinkedList<number>();
 
             list.add(0);
-            list.erase(0);
+            expect(list.erase(0)).to.be.eq(true);
 
             expect(list.empty()).to.be.eq(true);
         })
@@ -342,7 +342,7 @@ describe('Linked List Test', () => {
 
             xs.forEach(x => list.add(x));
 
-            list.erase(xs[0]);
+            expect(list.erase(xs[0])).to.be.eq(true);
 
             expect(list.toArray()).to.be.deep.equal(xs.splice(1, xs.length));
         })
@@ -352,7 +352,7 @@ describe('Linked List Test', () => {
 
             xs.forEach(x => list.add(x));
 
-            list.erase(xs[4]);
+            expect(list.erase(xs[4])).to.be.eq(true);
             xs.splice(4, 1);
 
             expect(list.toArray()).to.be.deep.equal(xs);
@@ -363,7 +363,7 @@ describe('Linked List Test', () => {
 
             xs.forEach(x => list.add(x));
 
-            list.erase(xs[xs.length - 1]);
+            expect(list.erase(xs[xs.length - 1])).to.be.eq(true);
             xs.splice(xs.length - 1, 1);
 
             expect(list.toArray()).to.be.deep.equal(xs);
@@ -373,7 +373,7 @@ describe('Linked List Test', () => {
             let xs: number[] = [3, -1, 4, 9, 1, 9, 2, -6, 4, 0];
 
             xs.forEach(x => list.add(x));
-            list.erase(-99);
+            expect(list.erase(-99)).to.be.eq(false);
 
             expect(list.toArray()).to.be.deep.equal(xs);
         })
@@ -388,8 +388,8 @@ describe('Linked List Test', () => {
         it('Single-Element List', () => {
             let list: LinkedList<number> = new LinkedList<number>();
 
-            list.add(0);
-            list.eraseAt(0);
+            list.add(1);
+            expect(list.eraseAt(0)).to.be.eq(1);
 
             expect(list.empty()).to.be.eq(true);
         })
@@ -399,7 +399,7 @@ describe('Linked List Test', () => {
 
             xs.forEach(x => list.add(x));
 
-            list.eraseAt(0);
+            expect(list.eraseAt(0)).to.be.eq(xs[0]);
 
             expect(list.toArray()).to.be.deep.equal(xs.splice(1, xs.length));
         })
@@ -409,7 +409,7 @@ describe('Linked List Test', () => {
 
             xs.forEach(x => list.add(x));
 
-            list.eraseAt(4);
+            expect(list.eraseAt(4)).to.be.eq(xs[4]);
             xs.splice(4, 1);
 
             expect(list.toArray()).to.be.deep.equal(xs);
@@ -420,7 +420,7 @@ describe('Linked List Test', () => {
 
             xs.forEach(x => list.add(x));
 
-            list.eraseAt(list.size() - 1);
+            expect(list.eraseAt(list.size() - 1)).to.be.eq(xs[xs.length - 1]);
             xs.splice(xs.length - 1, 1);
 
             expect(list.toArray()).to.be.deep.equal(xs);
@@ -448,14 +448,14 @@ describe('Linked List Test', () => {
         it('Empty List', () => {
             let list: LinkedList<number> = new LinkedList<number>();
 
-            expect(list.find(0)).to.be.eq(false);
+            expect(list.find(0)).to.be.eq(undefined);
         })
         it('Single-Element List', () => {
             let list: LinkedList<number> = new LinkedList<number>();
 
             list.add(0);
 
-            expect(list.find(0)).to.be.eq(true);
+            expect(list.find(0)).to.be.eq(0);
             expect(list.toArray()).to.be.deep.equal([0]);
         })
         it('Front of List', () => {
@@ -464,7 +464,7 @@ describe('Linked List Test', () => {
 
             xs.forEach(x => list.add(x));
 
-            expect(list.find(xs[0])).to.be.eq(true);
+            expect(list.find(xs[0])).to.be.eq(xs[0]);
             expect(list.toArray()).to.be.deep.equal(xs);
         })
         it('Middle of List', () => {
@@ -473,7 +473,7 @@ describe('Linked List Test', () => {
 
             xs.forEach(x => list.add(x));
 
-            expect(list.find(xs[3])).to.be.eq(true);
+            expect(list.find(xs[3])).to.be.eq(xs[3]);
             expect(list.toArray()).to.be.deep.equal(xs);
         })
         it('End of List', () => {
@@ -482,7 +482,7 @@ describe('Linked List Test', () => {
 
             xs.forEach(x => list.add(x));
 
-            expect(list.find(xs[xs.length - 1])).to.be.eq(true);
+            expect(list.find(xs[xs.length - 1])).to.be.eq(xs[xs.length - 1]);
             expect(list.toArray()).to.be.deep.equal(xs);
         })
         it('Nonexistent Element', () => {
@@ -491,7 +491,7 @@ describe('Linked List Test', () => {
 
             xs.forEach(x => list.add(x));
 
-            expect(list.find(-99)).to.be.eq(false);
+            expect(list.find(-99)).to.be.eq(undefined);
             expect(list.toArray()).to.be.deep.equal(xs);
         })
     })
@@ -582,7 +582,7 @@ describe('Linked List Test', () => {
 
             xs.forEach(x => list.add(x));
 
-            list.update(0, 10);
+            expect(list.update(0, 10)).to.be.eq(xs[0]);
             xs[0] = 10;
 
             expect(list.toArray()).to.be.deep.equal(xs);
@@ -593,7 +593,7 @@ describe('Linked List Test', () => {
 
             xs.forEach(x => list.add(x));
 
-            list.update(3, 99);
+            expect(list.update(3, 99)).to.be.eq(xs[3]);
             xs[3] = 99;
 
             expect(list.toArray()).to.be.deep.equal(xs);
@@ -604,7 +604,7 @@ describe('Linked List Test', () => {
 
             xs.forEach(x => list.add(x));
 
-            list.update(list.size() - 1, -50);
+            expect(list.update(list.size() - 1, -50)).to.be.eq(xs[xs.length - 1]);
             xs[xs.length - 1] = -50;
 
             expect(list.toArray()).to.be.deep.equal(xs);

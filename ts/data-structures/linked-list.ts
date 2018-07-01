@@ -172,26 +172,28 @@ export class LinkedList<T> extends List<T> {
     /**
      * See parent documentation.
      */
-    erase(value: T): void {
+    erase(value: T): boolean {
         let i: number = 0;
         let node: LLNode<T> | null = this.head;
 
         while (node != null) {
             if (this.equal(node.value, value)) {
                 this.eraseAt(i);
-                break;
+                return true;
             }
 
             ++i;
 
             node = node.next;
         }
+
+        return false;
     }
 
     /**
      * See parent documentation.
      */
-    eraseAt(index: number): void {
+    eraseAt(index: number): T {
         let node: LLNode<T> = this.nodeAt(index);
 
         if (node == this.head && node == this.last) { // single-element list
@@ -211,23 +213,25 @@ export class LinkedList<T> extends List<T> {
             unlink(node, next);
             link(previous, next);
         }
+
+        return node.value;
     }
 
     /**
      * See parent documentation.
      */
-    find(value: T): boolean {
+    find(value: T): T | undefined {
         let node: LLNode<T> | null = this.head;
 
         while (node != null) {
             if (this.equal(node.value, value)) {
-                return true;
+                return node.value;
             }
 
             node = node.next;
         }
 
-        return false;
+        return undefined;
     }
 
     /**
@@ -268,8 +272,13 @@ export class LinkedList<T> extends List<T> {
     /**
      * See parent documentation.
      */
-    update(index: number, value: T): void {
+    update(index: number, value: T): T {
+        let node: LLNode<T> = this.nodeAt(index);
+        let oldValue: T = node.value;
+
         this.nodeAt(index).value = value;
+
+        return oldValue;
     }
 
     /**
