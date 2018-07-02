@@ -74,7 +74,13 @@ export class BinaryHeap<T> extends Collection<T> {
             if (i == this.data.length - 1) { // last element
                 this.data.pop();
             } else {
-                this.data[i] = this.data.pop()!;
+                let last: T | undefined = this.data.pop();
+
+                if (last === undefined) {
+                    throw Error();
+                }
+
+                this.data[i] = last;
 
                 this.heapifyDown(i);
             }

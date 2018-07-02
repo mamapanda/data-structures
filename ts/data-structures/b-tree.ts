@@ -24,11 +24,11 @@ export class BTree<T> extends Collection<T> {
     max(): T {
         let node: BNode<T> = this.root.rightmost();
 
-        if (node.values.length > 0) {
-            return node.values[node.values.length - 1];
-        } else {
+        if (node.values.length <= 0) {
             throw Error();
         }
+
+        return node.values[node.values.length - 1];
     }
 
     /**
@@ -38,11 +38,11 @@ export class BTree<T> extends Collection<T> {
     min(): T {
         let node: BNode<T> = this.root.leftmost();
 
-        if (node.values.length > 0) {
-            return node.values[0];
-        } else {
+        if (node.values.length <= 0) {
             throw Error();
         }
+
+        return node.values[0];
     }
 
     /**
@@ -63,12 +63,12 @@ export class BTree<T> extends Collection<T> {
 
             if (cmpResult == 0) {
                 return; // element already exists in tree
-            } else if (node.leaf()) {
+            } else if (node.children == null) {
                 break;
             } else if (cmpResult < 0) {
-                node = node.children![i];
+                node = node.children[i];
             } else {
-                node = node.children![i + 1];
+                node = node.children[i + 1];
             }
         }
 
@@ -102,13 +102,20 @@ export class BTree<T> extends Collection<T> {
         let [node, i]: [BNode<T> | null, number] = this.findLocation(value);
 
         if (node != null) {
-            if (node.leaf()) {
+            if (node.children == null) {
                 node.values.splice(i, 1);
                 this.rebalanceUnder(node);
             } else {
-                let rightmost: BNode<T> = node.children![i].rightmost();
+                let rightmost: BNode<T> = node.children[i].rightmost();
 
-                node.values[i] = rightmost.values.pop()!;
+                let replacement: T | undefined = rightmost.values.pop();
+
+                if (replacement === undefined) {
+                    throw Error();
+                }
+
+                node.values[i] = replacement;
+
                 this.rebalanceUnder(rightmost);
             }
 
@@ -186,12 +193,12 @@ export class BTree<T> extends Collection<T> {
 
             if (cmpResult == 0) {
                 return [node, i];
-            } else if (node.leaf()) {
+            } else if (node.children == null) {
                 return [null, -1];
             } else if (cmpResult < 0) {
-                node = node.children![i];
+                node = node.children[i];
             } else {
-                node = node.children![i + 1];
+                node = node.children[i + 1];
             }
         }
     }
@@ -204,22 +211,31 @@ export class BTree<T> extends Collection<T> {
      * @param leftIndex the index of the left node within the parent node's children
      */
     private merge(left: BNode<T>, right: BNode<T>, leftIndex: number): void {
-        if (left.parent != right.parent) {
+        if (!left.parent || !right.parent || left.parent != right.parent) {
             throw Error();
         }
 
-        let parent: BNode<T> = left.parent!;
+        let parent: BNode<T> = left.parent;
+
+        if (!parent.children) {
+            throw Error();
+        }
+
         let separator: T = parent.values.splice(leftIndex, 1)[0];
 
         left.values.push(separator);
         left.values.push(...right.values);
 
-        if (!left.leaf()) { // right is also not leaf
-            left.children!.push(...right.children!);
-            right.children!.forEach(n => n.parent = left);
+        if (left.children) { // right is also not leaf
+            if (!right.children) {
+                throw Error();
+            }
+
+            left.children.push(...right.children);
+            right.children.forEach(n => n.parent = left);
         }
 
-        parent.children!.splice(leftIndex + 1, 1); // remove right
+        parent.children.splice(leftIndex + 1, 1); // remove right
     }
 
     /**
@@ -233,24 +249,27 @@ export class BTree<T> extends Collection<T> {
             if (node == this.root) {
                 this.root = new BNode<T>(false);
                 this.root.values.push(separator);
-                this.root.children!.push(left, right);
+                this.root.children = [left, right];
 
                 left.parent = this.root;
                 right.parent = this.root;
             } else {
-                let parent: BNode<T> = node.parent!;
-                let i: number = binarySearch(parent, separator, this.compare);
+                if (!node.parent || !node.parent.children) {
+                    throw Error();
+                }
 
-                if (this.compare(separator, parent.values[i]) > 0) {
+                let i: number = binarySearch(node.parent, separator, this.compare);
+
+                if (this.compare(separator, node.parent.values[i]) > 0) {
                     ++i;
                 }
 
-                parent.values.splice(i, 0, separator);
-                parent.children!.splice(i, 1, left, right); // delete node as well
-                left.parent = parent;
-                right.parent = parent;
+                node.parent.values.splice(i, 0, separator);
+                node.parent.children.splice(i, 1, left, right); // delete node as well
+                left.parent = node.parent;
+                right.parent = node.parent;
 
-                this.rebalanceOver(parent);
+                this.rebalanceOver(node.parent);
             }
         }
     }
@@ -261,25 +280,35 @@ export class BTree<T> extends Collection<T> {
      */
     private rebalanceUnder(node: BNode<T>): void {
         if (node != this.root && node.values.length < this.minDegree - 1) {
+            if (!node.parent || !node.parent.children) {
+                throw Error();
+            }
+
             if (!this.tryRotateLeft(node) && !this.tryRotateRight(node)) {
                 let leftSibling: BNode<T> | null = node.leftSibling();
-                let i: number = node.parent!.children!.indexOf(node);
+                let i: number = node.parent.children.indexOf(node);
 
                 if (leftSibling != null) { // merge node into left sibling
                     this.merge(leftSibling, node, i - 1);
                 } else { // merge right sibling into node
-                    this.merge(node, node.rightSibling()!, i);
+                    let rightSibling: BNode<T> | null = node.rightSibling();
+
+                    if (!rightSibling) {
+                        throw Error();
+                    }
+
+                    this.merge(node, rightSibling, i);
                 }
 
                 this.rebalanceUnder(node.parent!);
             }
         } else if (node == this.root && node.values.length == 0) {
-            if (!this.root.leaf()) { // should have been a merge step
-                if (this.root.children!.length != 1) {
+            if (this.root.children) { // should have been a merge step before
+                if (this.root.children.length != 1) {
                     throw Error();
                 }
 
-                this.root = this.root.children![0];
+                this.root = this.root.children[0];
             }
         }
     }
@@ -292,9 +321,9 @@ export class BTree<T> extends Collection<T> {
     private sizeOf(node: BNode<T>): number {
         let size: number = node.values.length;
 
-        if (!node.leaf()) {
-            for (let i: number = 0; i < node.children!.length; ++i) {
-                size += this.sizeOf(node.children![i]);
+        if (node.children) {
+            for (let i: number = 0; i < node.children.length; ++i) {
+                size += this.sizeOf(node.children[i]);
             }
         }
 
@@ -312,17 +341,23 @@ export class BTree<T> extends Collection<T> {
      */
     private split(node: BNode<T>): [T, BNode<T>, BNode<T>] {
         let left: BNode<T> = node;
-        let right: BNode<T> = new BNode<T>(left.leaf());
+        let right: BNode<T> = new BNode<T>(!left.children);
 
         right.values = left.values.splice(this.minDegree + 1,
                                           left.values.length);
-        if (!left.leaf()) {
-            right.children = left.children!.splice(this.minDegree + 1,
-                                                  left.children!.length);
+        if (left.children) {
+            right.children = left.children.splice(this.minDegree + 1,
+                                                  left.children.length);
             right.children.forEach(n => n.parent = right);
         }
 
-        return [left.values.pop()!, left, right];
+        let separator: T | undefined = left.values.pop();
+
+        if (separator === undefined) {
+            throw Error();
+        }
+
+        return [separator, left, right];
     }
 
     /**
@@ -332,17 +367,28 @@ export class BTree<T> extends Collection<T> {
      * @return whether the rotation was successful
      */
     private tryRotateLeft(node: BNode<T>): boolean {
+        if (!node.parent) {
+            return false;
+        }
+
+        if (!node.parent.children) {
+            throw Error();
+        }
+
         let sibling: BNode<T> | null = node.rightSibling();
 
         if (sibling != null && sibling.values.length > this.minDegree - 1) {
-            let parent: BNode<T> = node.parent!;
-            let i: number = parent.children!.indexOf(node);
+            let i: number = node.parent.children.indexOf(node);
 
-            node.values.push(parent.values[i]);
-            parent.values[i] = sibling.values.splice(0, 1)[0];
+            node.values.push(node.parent.values[i]);
+            node.parent.values[i] = sibling.values.splice(0, 1)[0];
 
-            if (!node.leaf()) {
-                node.children!.push(sibling.children!.splice(0, 1)[0]);
+            if (node.children) {
+                if (!sibling.children) {
+                    throw Error();
+                }
+
+                node.children.push(sibling.children.splice(0, 1)[0]);
             }
 
             return true;
@@ -358,17 +404,34 @@ export class BTree<T> extends Collection<T> {
      * @return whether the rotation was successful
      */
     private tryRotateRight(node: BNode<T>): boolean {
+        if (!node.parent) {
+            return false;
+        }
+
+        if (!node.parent.children) {
+            throw Error();
+        }
+
         let sibling: BNode<T> | null = node.leftSibling();
 
         if (sibling != null && sibling.values.length > this.minDegree - 1) {
-            let parent: BNode<T> = node.parent!;
-            let i: number = parent.children!.indexOf(node);
+            let i: number = node.parent.children.indexOf(node);
 
-            node.values.splice(0, 0, parent.values[i - 1]);
-            parent.values[i - 1] = sibling.values.pop()!;
+            node.values.splice(0, 0, node.parent.values[i - 1]);
+            node.parent.values[i - 1] = sibling.values.pop()!;
 
-            if (!node.leaf()) {
-                node.children!.splice(0, 0, sibling.children!.pop()!);
+            if (node.children) {
+                if (!sibling.children) {
+                    throw Error();
+                }
+
+                let x: BNode<T> | undefined = sibling.children.pop();
+
+                if (x === undefined) {
+                    throw Error();
+                }
+
+                node.children.splice(0, 0, x);
             }
 
             return true;
@@ -405,13 +468,6 @@ class BNode<T> {
         this.children = leaf ? null : [];
         this.parent = null;
         this.values = [];
-    }
-
-    /**
-     * @return whether this is a leaf node
-     */
-    leaf(): boolean {
-        return this.children == null;
     }
 
     /**
@@ -486,7 +542,7 @@ class BNode<T> {
     toString(): string {
         let str: string = `(${this.values.toString()})`;
 
-        if (!this.leaf()) {
+        if (this.children) {
             for (let child of this.children!) {
                 str += `[${child.toString()}]`;
             }
@@ -531,10 +587,10 @@ function binarySearch<T>(node: BNode<T>, x: T, compare: Comparator<T>): number {
  * @return the Iterator
  */
 function* iterate<T>(node: BNode<T>): Iterator<T> {
-    if (node.leaf()) {
+    if (!node.children) {
         yield* node.values;
     } else {
-        let children: BNode<T>[] = node.children!;
+        let children: BNode<T>[] = node.children;
 
         yield* iterate(children[0])[Symbol.iterator]();
 

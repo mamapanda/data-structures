@@ -75,7 +75,13 @@ export class HashTable<T> extends Collection<T> {
         let i: number = this.indexOf(value);
 
         if (i >= 0) {
-            return this.data[i]!;
+            let x: T | null | undefined = this.data[i];
+
+            if (x == null) { // null == undefined
+                throw Error();
+            }
+
+            return x;
         } else {
             return undefined;
         }

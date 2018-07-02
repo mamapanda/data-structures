@@ -98,7 +98,11 @@ export class LinkedList<T> extends List<T> {
             this.head = node;
             this.last = node;
         } else {
-            link(this.last!, node);
+            if (!this.last) {
+                throw Error();
+            }
+
+            link(this.last, node);
             this.last = node;
         }
     }
@@ -113,7 +117,11 @@ export class LinkedList<T> extends List<T> {
             this.head = node;
             this.last = node;
         } else {
-            link(node, this.head!);
+            if (!this.head) {
+                throw Error();
+            }
+
+            link(node, this.head);
             this.head = node;
         }
     }
@@ -138,7 +146,11 @@ export class LinkedList<T> extends List<T> {
             let node: LLNode<T> = this.nodeAt(index);
             let newNode: LLNode<T> = new LLNode<T>(value);
 
-            link(node.previous!, newNode);
+            if (!node.previous) {
+                throw Error();
+            }
+
+            link(node.previous, newNode);
             link(newNode, node);
         } else if (index == currentSize) {
             this.pushBack(value);
@@ -200,18 +212,25 @@ export class LinkedList<T> extends List<T> {
             this.head = null;
             this.last = null;
         } else if (node == this.head) { // node.previous == null
-            this.head = this.head.next!;
-            unlink(node, node.next!);
-        } else if (node == this.last) { // node.next == null
-            this.last = this.last.previous!;
-            unlink(node.previous!, node);
-        } else {
-            let previous: LLNode<T> = node.previous!;
-            let next: LLNode<T> = node.next!;
+            if (!node.next) {
+                throw Error();
+            }
 
-            unlink(previous, node);
-            unlink(node, next);
-            link(previous, next);
+            this.head = this.head.next;
+            unlink(node, node.next);
+        } else if (node == this.last) { // node.next == null
+            if (!node.previous) {
+                throw Error();
+            }
+
+            this.last = this.last.previous;
+            unlink(node.previous, node);
+        } else {
+            if (!node.previous || !node.next) {
+                throw Error();
+            }
+
+            link(node.previous, node.next); // removes references to node
         }
 
         return node.value;

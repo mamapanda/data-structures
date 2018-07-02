@@ -17,7 +17,7 @@ export class SplayTree<T> extends BinarySearchTree<T> {
      * See parent documentation.
      */
     add(value: T): void {
-        let node: BSTNode<T>;
+        let node: BSTNode<T> | undefined = undefined;
 
         let inserted: boolean = super.insert(value, (v, p) => {
             node = new BSTNode<T>(v, p);
@@ -25,7 +25,11 @@ export class SplayTree<T> extends BinarySearchTree<T> {
         });
 
         if (inserted) {
-            this.splay(node!);
+            if (!node) {
+                throw Error();
+            }
+
+            this.splay(node);
         }
     }
 
@@ -69,9 +73,13 @@ export class SplayTree<T> extends BinarySearchTree<T> {
      * See parent documentation.
      */
     max(): T {
-        let max: T = super.max(); // throws error if this is empty
+        let max: T = super.max();
 
-        this.splay(this.root!.rightmost());
+        if (!this.root) {
+            throw Error();
+        }
+
+        this.splay(this.root.rightmost());
 
         return max;
     }
@@ -80,9 +88,13 @@ export class SplayTree<T> extends BinarySearchTree<T> {
      * See parent documentation.
      */
     min(): T {
-        let min: T = super.min(); // throws error if this is empty
+        let min: T = super.min();
 
-        this.splay(this.root!.leftmost());
+        if (!this.root) {
+            throw Error();
+        }
+
+        this.splay(this.root.leftmost());
 
         return min;
     }

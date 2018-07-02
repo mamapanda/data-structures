@@ -44,7 +44,13 @@ export class SkipList<T> extends Indexable<T> {
      * See parent documentation.
      */
     at(index: number): T {
-        return this.nodeAt(index).value!;
+        let node: SLNode<T> = this.nodeAt(index);
+
+        if (node.value === undefined) {
+            throw Error();
+        }
+
+        return node.value;
     }
 
     /**
@@ -71,10 +77,16 @@ export class SkipList<T> extends Indexable<T> {
             let level: number = i;
             let current: SLNode<T> | null = previous.next[level];
 
-            if (current != null && this.compare(value, current.value!) == 0) {
-                previous.next[level] = current.next[level];
+            if (current) {
+                if (current.value === undefined) {
+                    throw Error();
+                }
 
-                found = true;
+                if (this.compare(value, current.value) == 0) {
+                    previous.next[level] = current.next[level];
+
+                    found = true;
+                }
             }
         });
 
@@ -87,7 +99,11 @@ export class SkipList<T> extends Indexable<T> {
     eraseAt(index: number): T {
         let node: SLNode<T> = this.nodeAt(index);
 
-        this.previousOf(node.value!).forEach((previous: SLNode<T>, i: number) => {
+        if (node.value === undefined) {
+            throw Error();
+        }
+
+        this.previousOf(node.value).forEach((previous: SLNode<T>, i: number) => {
             let level: number = i;
 
             if (previous.next[level] == node) {
@@ -95,7 +111,7 @@ export class SkipList<T> extends Indexable<T> {
             }
         });
 
-        return node.value!;
+        return node.value;
     }
 
     /**
@@ -105,11 +121,17 @@ export class SkipList<T> extends Indexable<T> {
         let previous: SLNode<T> = this.previousOf(value)[0];
         let node: SLNode<T> | null = previous.next[0];
 
-        if (node != null && this.compare(node.value!, value) == 0) {
-            return node.value!;
-        } else {
-            return undefined;
+        if (node) {
+            if (node.value === undefined) {
+                throw Error();
+            }
+
+            if (this.compare(node.value, value) == 0) {
+                return node.value;
+            }
         }
+
+        return undefined;
     }
 
     /**
@@ -118,8 +140,12 @@ export class SkipList<T> extends Indexable<T> {
     *iterator(): Iterator<T> {
         let node: SLNode<T> | null = this.head.next[0];
 
-        while (node != null) {
-            yield node.value!; // not head means value is defined
+        while (node) {
+            if (node.value === undefined) {
+                throw Error();
+            }
+
+            yield node.value;
 
             node = node.next[0];
         }
@@ -148,7 +174,7 @@ export class SkipList<T> extends Indexable<T> {
     /**
      * The function to use when comparing two values.
      */
-    private compare: Comparator<T>;
+    private readonly compare: Comparator<T>;
 
     /**
      * The null head node of _this_.
@@ -192,11 +218,19 @@ export class SkipList<T> extends Indexable<T> {
         let previous: SLNode<T> = this.head;
 
         for (let level: number = this.head.level(); level >= 0; --level) {
-            let current: SLNode<T> | null = previous.next[level]!;
+            let current: SLNode<T> | null = previous.next[level];
 
-            while (current != null && this.compare(current.value!, value) < 0) {
-                previous = current;
-                current = current.next[level];
+            while (current) {
+                if (current.value === undefined) {
+                    throw Error();
+                }
+
+                if (this.compare(current.value, value) < 0) {
+                    previous = current;
+                    current = current.next[level];
+                } else {
+                    break;
+                }
             }
 
             previousList[level] = previous;

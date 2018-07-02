@@ -17,7 +17,7 @@ export class AVLTree<T> extends BinarySearchTree<T> {
      * See parent documentation.
      */
     add(value: T): void {
-        let node: AVLNode<T>;
+        let node: AVLNode<T> | undefined = undefined;
         let inserted: boolean = super.insert(value, (v, p) => {
             node = new AVLNode<T>(v, p as AVLNode<T>)
 
@@ -25,7 +25,11 @@ export class AVLTree<T> extends BinarySearchTree<T> {
         });
 
         if (inserted) {
-            this.rebalance(node!);
+            if (!node) {
+                throw Error();
+            }
+
+            this.rebalance(node);
         }
     }
 

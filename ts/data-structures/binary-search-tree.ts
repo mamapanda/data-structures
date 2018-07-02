@@ -204,22 +204,28 @@ export class BinarySearchTree<T> extends Collection<T> {
         if (node == this.root) { // node.parent == null
             return this.eraseRoot();
         } else { // node.parent != null
-            let parent: BSTNode<T> = node.parent!;
+            if (!node.parent) {
+                throw Error();
+            }
 
             if (node.right == null) {
-                parent.replaceDirectChild(node, node.left);
-                return parent;
+                node.parent.replaceDirectChild(node, node.left);
+                return node.parent;
             } else if (node.left == null) {
-                parent.replaceDirectChild(node, node.right);
-                return parent;
+                node.parent.replaceDirectChild(node, node.right);
+                return node.parent;
             } else {
                 let replacement: BSTNode<T> = node.right.leftmost();
 
+                if (!replacement.parent) {
+                    throw Error();
+                }
+
                 node.value = replacement.value;
                 // replacement is leftmost, but may still have right children
-                replacement.parent!.replaceDirectChild(replacement, replacement.right);
+                replacement.parent.replaceDirectChild(replacement, replacement.right);
 
-                return replacement.parent!;
+                return replacement.parent;
             }
         }
     }
@@ -319,10 +325,14 @@ export class BinarySearchTree<T> extends Collection<T> {
             } else {
                 let newRoot: BSTNode<T> = this.root.right.leftmost();
 
-                this.root.value = newRoot.value;
-                newRoot.parent!.replaceDirectChild(newRoot, newRoot.right);
+                if (!newRoot.parent) {
+                    throw Error();
+                }
 
-                return newRoot.parent!;
+                this.root.value = newRoot.value;
+                newRoot.parent.replaceDirectChild(newRoot, newRoot.right);
+
+                return newRoot.parent;
             }
         } else {
             throw Error();
@@ -447,8 +457,8 @@ export class BSTNode<T> {
  */
 function* iterate<T>(node: BSTNode<T> | null): Iterator<T> {
     if (node != null) {
-        yield* iterate(node.left!)[Symbol.iterator](); // null checked by function
+        yield* iterate(node.left)[Symbol.iterator](); // null checked by function
         yield node.value;
-        yield* iterate(node.right!)[Symbol.iterator]();
+        yield* iterate(node.right)[Symbol.iterator]();
     }
 }
